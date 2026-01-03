@@ -10,14 +10,15 @@ function MyOrders({ user, userType }) {
 
   useEffect(() => {
     loadOrders();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const interval = setInterval(loadOrders, 15000); // Auto-refresh every 15s
+    return () => clearInterval(interval);
   }, [userType]);
 
   const loadOrders = async () => {
     try {
       const tgUser = getTelegramUser();
       if (!tgUser) {
-        navigate('/');
+        setLoading(false);
         return;
       }
 
@@ -29,7 +30,7 @@ function MyOrders({ user, userType }) {
             ordersData = await getDriverOrders(driver._id);
           }
         } catch (error) {
-          console.error('Error loading driver orders:', error);
+          console.log('Driver check failed', error);
         }
       } else {
         try {
@@ -38,10 +39,12 @@ function MyOrders({ user, userType }) {
             ordersData = await getPassengerOrders(passengerId);
           }
         } catch (error) {
-          console.error('Error loading passenger orders:', error);
+          console.error('Passenger orders failed', error);
         }
       }
 
+      // Sort by date desc
+      ordersData.sort((a, b) => new Date(b.date) - new Date(a.date));
       setOrders(ordersData);
     } catch (error) {
       console.error('Error loading orders:', error);
@@ -52,12 +55,12 @@ function MyOrders({ user, userType }) {
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'pending': return 'Ожидает';
-      case 'accepted': return 'Принят';
-      case 'rejected': return 'Отклонен';
-      case 'in-progress': return 'В пути';
-      case 'completed': return 'Завершен';
-      case 'cancelled': return 'Отменен';
+      case 'pending': return '⏳ Поиск водителя';
+      case 'accepted': return '✅ Водитель найден';
+      case 'rejected': return '❌ Отменен';
+      case 'in-progress': return '🚖 В пути';
+      case 'completed': return '🏁 Завершен';
+      case 'cancelled': return '⛔ Отменен';
       default: return status;
     }
   };
@@ -66,6 +69,7 @@ function MyOrders({ user, userType }) {
     switch (status) {
       case 'pending': return 'status-pending';
       case 'accepted': return 'status-accepted';
+      case 'completed': return 'status-completed'; // Add css for this
       default: return '';
     }
   };
@@ -81,19 +85,12 @@ function MyOrders({ user, userType }) {
   return (
     <div>
       <div className="page-header">
-        <button className="btn-back" onClick={() => navigate('/')}>Назад</button>
-        <h2>Мои заказы</h2>
-        <div style={{ width: '40px' }}></div>
+        <h2>{userType === 'driver' ? 'Взятые заказы' : 'Мои поездки'}</h2>
       </div>
 
       {orders.length === 0 ? (
-        <div className="no-orders">
-          <p>У вас пока нет активных заказов</p>
-          <div className="form-section">
-            <button className="btn btn-primary" onClick={() => navigate(userType === 'driver' ? '/driver' : '/order')}>
-              {userType === 'driver' ? 'Перейти в панель таксиста' : 'Создать новый заказ'}
-            </button>
-          </div>
+        <div className="no-orders" style={{ marginTop: 100 }}>
+          <p>История заказов пуста</p>
         </div>
       ) : (
         <div className="orders-list">
@@ -108,18 +105,33 @@ function MyOrders({ user, userType }) {
                 </span>
               </div>
               <div className="order-info">
-                <strong>Откуда:</strong> {order.from?.city || order.from_city}, {order.from?.address || order.from_address}
+                <strong>Откуда:</strong> {order.from?.city || order.from_city}
               </div>
               <div className="order-info">
-                <strong>Куда:</strong> {order.to?.city || order.to_city}, {order.to?.address || order.to_address}
+                <strong>Куда:</strong> {order.to?.city || order.to_city}
               </div>
               <div className="order-info">
-                <strong>Дата:</strong> {new Date(order.date).toLocaleString('ru-RU')}
+                <strong>Дата:</strong> {new Date(order.date).toLocaleString('ru-RU', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
               </div>
-              {order.driver && (
-                <div className="order-info">
-                  <strong>Таксист:</strong> {order.driver.name} ({order.driver.carModel || order.driver.car_model}, {order.driver.carNumber || order.driver.car_number})
+              
+              {userType === 'passenger' && order.driver && (
+                <div className="driver-info-box" style={{ marginTop: 10, padding: 8, background: 'rgba(255,255,255,0.05)', borderRadius: 8 }}>
+                  <div style={{ fontWeight: 600 }}>🚕 Вас везет: {order.driver.name}</div>
+                  <div style={{ fontSize: 13, color: 'var(--hint-color)' }}>
+                    {order.driver.carModel} • {order.driver.carNumber}
+                  </div>
+                  <a href={`tel:${order.driver.phone}`} style={{ display: 'block', marginTop: 5, color: '#34C759', textDecoration: 'none' }}>
+                    📞 Позвонить водителю
+                  </a>
                 </div>
+              )}
+
+              {userType === 'driver' && (
+                 <div className="driver-info-box" style={{ marginTop: 10 }}>
+                    <a href={`tel:${order.phone}`} style={{ color: '#34C759', textDecoration: 'none' }}>
+                        📞 Позвонить пассажиру
+                    </a>
+                 </div>
               )}
             </div>
           ))}

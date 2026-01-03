@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 import { 
-  registerDriver, 
   getDriver, 
   setDriverStatus, 
   getAvailableOrders, 
@@ -14,31 +12,19 @@ import { getTelegramUser } from '../utils/telegram';
 const API_URL = process.env.REACT_APP_API_URL?.replace('/api', '') || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3000');
 
 function DriverPanel({ user }) {
-  const navigate = useNavigate();
   const [driver, setDriver] = useState(null);
   const [isOnline, setIsOnline] = useState(false);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [registering, setRegistering] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    carModel: '',
-    carNumber: ''
-  });
-  // eslint-disable-next-line no-unused-vars
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
     const tgUser = getTelegramUser();
     if (!tgUser) {
-      alert('Ошибка: не удалось получить данные пользователя');
-      navigate('/');
+      setLoading(false);
       return;
     }
-
     loadDriverData(tgUser.id.toString());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -48,13 +34,13 @@ function DriverPanel({ user }) {
       
       newSocket.on('new-order', (order) => {
         setOrders(prev => [order, ...prev]);
+        if (window.Telegram?.WebApp) {
+           window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+        }
       });
 
       setSocket(newSocket);
-
-      return () => {
-        newSocket.disconnect();
-      };
+      return () => newSocket.disconnect();
     }
   }, [driver, isOnline]);
 
@@ -71,21 +57,8 @@ function DriverPanel({ user }) {
       const driverData = await getDriver(telegramId);
       setDriver(driverData);
       setIsOnline(driverData.isOnline);
-      setFormData({
-        name: driverData.name || '',
-        phone: driverData.phone || '',
-        carModel: driverData.carModel || '',
-        carNumber: driverData.carNumber || ''
-      });
     } catch (error) {
-      if (error.response?.status === 404) {
-        setFormData({
-          name: '',
-          phone: '',
-          carModel: '',
-          carNumber: ''
-        });
-      }
+      console.log("Driver not found or error", error);
     } finally {
       setLoading(false);
     }
@@ -94,36 +67,10 @@ function DriverPanel({ user }) {
   const loadAvailableOrders = async () => {
     try {
       const availableOrders = await getAvailableOrders();
+      // Filter out orders already accepted by others if API doesn't do it
       setOrders(availableOrders);
     } catch (error) {
       console.error('Error loading orders:', error);
-    }
-  };
-
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    setRegistering(true);
-
-    try {
-      const tgUser = getTelegramUser();
-      if (!tgUser) {
-        alert('Ошибка: не удалось получить данные пользователя');
-        return;
-      }
-      
-      const driverData = await registerDriver(
-        tgUser.id.toString(),
-        `${tgUser.first_name} ${tgUser.last_name || ''}`.trim(),
-        tgUser.phone_number || '',
-        formData.carModel,
-        formData.carNumber
-      );
-      setDriver(driverData);
-    } catch (error) {
-      console.error('Error registering driver:', error);
-      alert('Ошибка: ' + (error.response?.data?.error || error.message));
-    } finally {
-      setRegistering(false);
     }
   };
 
@@ -142,11 +89,14 @@ function DriverPanel({ user }) {
     try {
       await acceptOrder(orderId, driver.id || driver._id);
       setOrders(prev => prev.filter(order => order._id !== orderId));
-      alert('Заказ принят!');
-      navigate('/my-orders');
+      if (window.Telegram?.WebApp) {
+         window.Telegram.WebApp.showAlert('Заказ принят! Перейдите в "Заказы" для деталей.');
+      } else {
+         alert('Заказ принят!');
+      }
     } catch (error) {
       console.error('Error accepting order:', error);
-      alert('Ошибка при принятии заказа: ' + (error.response?.data?.error || error.message));
+      alert('Ошибка: ' + (error.response?.data?.error || error.message));
     }
   };
 
@@ -159,52 +109,13 @@ function DriverPanel({ user }) {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="container" style={{ padding: '20px', textAlign: 'center', color: 'var(--hint-color)' }}>
-        <p>Загрузка...</p>
-      </div>
-    );
-  }
+  if (loading) return <div className="container"><p style={{textAlign:'center', marginTop:20}}>Загрузка...</p></div>;
 
   if (!driver) {
     return (
-      <div>
-        <div className="page-header">
-          <button className="btn-back" onClick={() => navigate('/')}>Назад</button>
-          <h2>Автомобиль</h2>
-          <div style={{ width: '40px' }}></div>
-        </div>
-
-        <form onSubmit={handleRegister} className="form-section">
-          <h3>Регистрация</h3>
-          <div className="input-group">
-            <label>Модель</label>
-            <input
-              type="text"
-              value={formData.carModel}
-              onChange={(e) => setFormData({ ...formData, carModel: e.target.value })}
-              required
-              placeholder="Toyota Camry"
-              autoFocus
-            />
-          </div>
-          <div className="input-group">
-            <label>Номер</label>
-            <input
-              type="text"
-              value={formData.carNumber}
-              onChange={(e) => setFormData({ ...formData, carNumber: e.target.value.toUpperCase() })}
-              required
-              placeholder="А123БВ777"
-              maxLength="9"
-            />
-          </div>
-          
-        </form>
-        <button className="btn btn-primary" onClick={handleRegister} disabled={registering}>
-            {registering ? 'Сохранение...' : 'Сохранить'}
-        </button>
+      <div style={{ padding: 20, textAlign: 'center' }}>
+        <h3>Вы не зарегистрированы как водитель</h3>
+        <p>Перейдите в профиль, чтобы зарегистрироваться.</p>
       </div>
     );
   }
@@ -212,69 +123,62 @@ function DriverPanel({ user }) {
   return (
     <div>
       <div className="page-header">
-        <button className="btn-back" onClick={() => navigate('/')}>Назад</button>
-        <h2>Таксист</h2>
-        <div style={{ width: '40px' }}></div>
-      </div>
-
-      <div className="form-section">
-        <h3>Водитель</h3>
-        <div className="menu-item" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-          <div style={{ fontWeight: 600, fontSize: '17px', color: 'var(--text-color)' }}>{driver.name || driver.name}</div>
-          <div style={{ color: 'var(--hint-color)', fontSize: '13px', marginTop: '4px' }}>{driver.carModel || driver.car_model} • {driver.carNumber || driver.car_number}</div>
-          <div style={{ color: 'var(--hint-color)', fontSize: '13px' }}>{driver.phone}</div>
+        <h2>Лента заказов</h2>
+        <div style={{ marginLeft: 'auto' }}>
+            <button
+            className={`btn ${isOnline ? 'btn-online' : 'btn-offline'}`}
+            onClick={handleToggleOnline}
+            style={{ 
+                padding: '4px 12px', 
+                fontSize: '12px', 
+                height: 'auto', 
+                minHeight: '30px',
+                width: 'auto',
+                borderRadius: '15px'
+            }}
+            >
+            {isOnline ? '🟢 Онлайн' : '🔴 Офлайн'}
+            </button>
         </div>
       </div>
 
-      <div className="form-section">
-        <h3>Статус</h3>
-        <button
-          className={`btn ${isOnline ? 'btn-online' : 'btn-offline'}`}
-          onClick={handleToggleOnline}
-          style={{ justifyContent: 'center' }}
-        >
-          {isOnline ? '🟢 Вы онлайн' : '🔴 Вы офлайн'}
-        </button>
-      </div>
+      {!isOnline && (
+        <div className="no-orders" style={{ marginTop: 40 }}>
+           <p>Вы офлайн. Включите статус "Онлайн", чтобы видеть заказы.</p>
+        </div>
+      )}
 
       {isOnline && (
         <div className="orders-list">
-          <div className="section-header">Доступные заказы</div>
           {orders.length === 0 ? (
-            <div className="no-orders">
-              <p>Нет доступных заказов</p>
+            <div className="no-orders" style={{ marginTop: 40 }}>
+              <p>Поиск заказов...</p>
             </div>
           ) : (
             orders.map(order => (
               <div key={order._id || order.id} className="order-card">
                 <div className="order-header">
-                  <span className="order-price">{order.price} ₽</span>
-                  <span className={`status-badge status-${order.status}`}>
-                    {order.status === 'pending' ? 'Ожидает' : order.status}
+                  <span className="order-price">{order.price} {order.currency || '₸'}</span>
+                  <span className="status-badge">
+                     {new Date(order.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                   </span>
                 </div>
                 <div className="order-info">
-                  <strong>Откуда:</strong> {order.from?.city || order.from_city}, {order.from?.address || order.from_address}
+                  <strong>Откуда:</strong> {order.from?.city || order.from_city}
                 </div>
                 <div className="order-info">
-                  <strong>Куда:</strong> {order.to?.city || order.to_city}, {order.to?.address || order.to_address}
+                  <strong>Куда:</strong> {order.to?.city || order.to_city}
                 </div>
                 <div className="order-info">
-                  <strong>Дата:</strong> {new Date(order.date).toLocaleString('ru-RU')}
+                   {order.passengersCount} пас. {order.luggage ? '• 🧳 Багаж' : ''}
                 </div>
-                <div className="order-info">
-                  <strong>Пассажиров:</strong> {order.passengersCount || order.passengers_count}
-                </div>
-                {order.luggage && (
-                  <div className="order-info">Есть багаж</div>
-                )}
                 {order.comment && (
-                  <div className="order-info">
-                    <strong>Комментарий:</strong> {order.comment}
+                  <div className="order-info" style={{ fontStyle: 'italic', marginTop: 4 }}>
+                    "{order.comment}"
                   </div>
                 )}
-                {order.status === 'pending' && (
-                  <div className="order-actions">
+                
+                <div className="order-actions">
                     <button
                       className="btn btn-accept"
                       onClick={() => handleAcceptOrder(order._id || order.id)}
@@ -285,21 +189,14 @@ function DriverPanel({ user }) {
                       className="btn btn-reject"
                       onClick={() => handleRejectOrder(order._id || order.id)}
                     >
-                      Отклонить
+                      Скрыть
                     </button>
-                  </div>
-                )}
+                </div>
               </div>
             ))
           )}
         </div>
       )}
-
-      <div className="form-section">
-        <button className="btn" onClick={() => navigate('/my-orders')}>
-          Мои заказы
-        </button>
-      </div>
     </div>
   );
 }

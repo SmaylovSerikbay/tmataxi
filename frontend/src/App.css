@@ -4,13 +4,14 @@
   min-height: 100vh;
   background-color: var(--page-bg-color);
   padding: 16px;
-  padding-bottom: 40px;
+  /* Extra padding for bottom navigation */
+  padding-bottom: 90px !important; 
 }
 
 /* Rounded Card Style (Telegram Inset Grouped) */
 .form-section, .orders-list, .menu-list {
   background-color: transparent;
-  margin-top: 24px;
+  margin-top: 16px; /* Reduced top margin */
   margin-bottom: 24px;
 }
 
@@ -66,7 +67,7 @@
 .menu-item:not(:last-child)::after {
   content: '';
   position: absolute;
-  left: 56px; /* Align with text start */
+  left: 16px; /* Align with text start better */
   right: 0;
   bottom: 0;
   height: 0.5px;
@@ -169,6 +170,8 @@
   color: var(--text-color);
   font-size: 16px;
   font-weight: 400;
+  border: none; /* Reset default border */
+  cursor: pointer;
 }
 
 .btn:active {
@@ -197,18 +200,7 @@
   align-items: center;
   background: transparent;
   height: 100%;
-}
-
-.btn-back::before {
-  content: ''; /* Could be chevron */
-  display: inline-block;
-  /* Simple chevron left */
-  width: 10px; 
-  height: 10px;
-  border-left: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
-  transform: rotate(45deg);
-  margin-right: 4px;
+  border: none;
 }
 
 /* Page Header */
@@ -217,17 +209,17 @@
   align-items: center;
   justify-content: space-between;
   background-color: transparent;
-  padding: 0 8px;
+  padding: 8px 8px;
   height: 44px;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 
 .page-header h2 {
-  font-size: 17px;
-  font-weight: 600;
+  font-size: 28px; /* Large Title Style */
+  font-weight: 700;
   margin: 0;
   flex: 1;
-  text-align: center;
+  text-align: left; /* iOS 11+ Style */
   color: var(--text-color);
 }
 
@@ -236,8 +228,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 30px 16px;
-  margin-bottom: 10px;
+  padding: 20px 16px;
+  margin-bottom: 0px;
 }
 
 .profile-avatar {
@@ -316,6 +308,11 @@
   color: var(--text-color);
 }
 
+.status-accepted {
+    background-color: rgba(52, 199, 89, 0.2);
+    color: #34C759;
+}
+
 /* Order Actions */
 .order-actions {
   display: flex;
@@ -356,4 +353,20 @@
   margin-right: 12px;
   width: 20px;
   height: 20px;
+}
+
+.btn-online {
+    background-color: rgba(52, 199, 89, 0.2) !important;
+    color: #34C759 !important;
+}
+
+.btn-offline {
+    background-color: rgba(255, 59, 48, 0.2) !important;
+    color: #FF3B30 !important;
+}
+
+.no-orders {
+    text-align: center;
+    color: var(--hint-color);
+    padding: 20px;
 }

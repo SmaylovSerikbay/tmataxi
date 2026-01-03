@@ -1,20 +1,39 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { initTelegramWebApp } from './utils/telegram';
-import Home from './pages/Home';
 import PassengerOrder from './pages/PassengerOrder';
 import DriverPanel from './pages/DriverPanel';
 import MyOrders from './pages/MyOrders';
+import Profile from './pages/Profile';
+import BottomNavigation from './components/BottomNavigation';
 import './App.css';
+
+// Layout component to wrap pages with BottomNavigation
+const Layout = ({ children }) => {
+  return (
+    <>
+      <div className="content-container">
+        {children}
+      </div>
+      <BottomNavigation />
+    </>
+  );
+};
 
 function App() {
   const [user, setUser] = useState(null);
-  const [userType, setUserType] = useState(null); // 'passenger' or 'driver'
+  // Persistent user type state
+  const [userType, setUserType] = useState(() => {
+    return localStorage.getItem('userType') || 'passenger';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('userType', userType);
+  }, [userType]);
 
   useEffect(() => {
     initTelegramWebApp();
     
-    // Получаем данные пользователя из Telegram
     if (window.Telegram?.WebApp) {
       const tg = window.Telegram.WebApp;
       tg.ready();
@@ -36,10 +55,28 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/" element={<Home user={user} userType={userType} setUserType={setUserType} />} />
-          <Route path="/order" element={<PassengerOrder user={user} />} />
-          <Route path="/driver" element={<DriverPanel user={user} />} />
-          <Route path="/my-orders" element={<MyOrders user={user} userType={userType} />} />
+          <Route path="/" element={
+            <Layout>
+              {userType === 'passenger' ? (
+                <PassengerOrder user={user} />
+              ) : (
+                <DriverPanel user={user} />
+              )}
+            </Layout>
+          } />
+          
+          <Route path="/my-orders" element={
+            <Layout>
+              <MyOrders user={user} userType={userType} />
+            </Layout>
+          } />
+          
+          <Route path="/profile" element={
+            <Layout>
+              <Profile user={user} userType={userType} setUserType={setUserType} />
+            </Layout>
+          } />
+
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
@@ -48,4 +85,3 @@ function App() {
 }
 
 export default App;
-

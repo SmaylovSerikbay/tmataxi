@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { createOrder, registerPassenger } from '../utils/api';
 import { getTelegramUser } from '../utils/telegram';
 
 function PassengerOrder({ user }) {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [currency, setCurrency] = useState('KZT'); // 'KZT' or 'UZS'
+  const [currency, setCurrency] = useState('KZT'); 
   const [formData, setFormData] = useState({
     fromCity: '',
     fromAddress: '',
@@ -25,31 +23,9 @@ function PassengerOrder({ user }) {
     const tgUser = getTelegramUser();
     if (tgUser && window.Telegram?.WebApp) {
       const tg = window.Telegram.WebApp;
-      
-      // Removed MainButton logic to avoid duplicate buttons as requested
-      // tg.MainButton.text = "Создать заказ";
-      // tg.MainButton.show();
-      // tg.MainButton.onClick(() => ...);
-
       if (tg.initDataUnsafe?.user?.phone_number) {
         setFormData(prev => ({ ...prev, phone: tg.initDataUnsafe.user.phone_number }));
       }
-    }
-    
-    // Auto-register check
-    if (tgUser) {
-      const autoRegister = async () => {
-        try {
-          await registerPassenger(
-            tgUser.id.toString(),
-            `${tgUser.first_name} ${tgUser.last_name || ''}`.trim(),
-            tgUser.phone_number || ''
-          );
-        } catch (error) {
-           // Ignore errors here, will handle on submit
-        }
-      };
-      autoRegister();
     }
   }, []);
 
@@ -78,7 +54,6 @@ function PassengerOrder({ user }) {
 
       const phoneToSubmit = formData.phone || `@${tgUser.username}` || 'No Phone';
 
-      // 1. Ensure passenger exists
       const passenger = await registerPassenger(
         tgUser.id.toString(),
         `${tgUser.first_name} ${tgUser.last_name || ''}`.trim(),
@@ -87,7 +62,6 @@ function PassengerOrder({ user }) {
 
       localStorage.setItem('passengerId', passenger.id || passenger._id);
 
-      // 2. Create Order
       const orderDate = new Date(`${formData.date}T${formData.time}`);
       await createOrder({
         passengerId: passenger.id || passenger._id,
@@ -108,11 +82,16 @@ function PassengerOrder({ user }) {
         currency: currency
       });
 
-      // 3. Success feedback
       if (window.Telegram?.WebApp) {
         window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+        window.Telegram.WebApp.showAlert('Заказ создан успешно!');
+      } else {
+        alert('Заказ создан!');
       }
-      navigate('/my-orders');
+      
+      // Reset form or redirect handled by user manually going to "Orders" tab
+      setFormData(prev => ({...prev, price: '', comment: ''}));
+      
     } catch (error) {
       console.error('Error creating order:', error);
       if (window.Telegram?.WebApp) {
@@ -129,9 +108,7 @@ function PassengerOrder({ user }) {
   return (
     <div>
       <div className="page-header">
-        <button className="btn-back" onClick={() => navigate('/')}>Назад</button>
         <h2>Новый заказ</h2>
-        <div style={{ width: '40px' }}></div>
       </div>
 
       <form onSubmit={handleSubmit} className="order-form">
@@ -159,8 +136,6 @@ function PassengerOrder({ user }) {
               placeholder="Улица, дом"
             />
           </div>
-          
-          {/* Separator / Arrow visual could go here */}
           
           <div className="input-group">
             <label>Куда</label>
@@ -213,9 +188,9 @@ function PassengerOrder({ user }) {
           <div className="input-group">
             <label>Пассажиров</label>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <button type="button" onClick={() => setFormData(p => ({...p, passengersCount: Math.max(1, p.passengersCount - 1)}))} style={{ fontSize: '20px', padding: '0 10px', color: 'var(--link-color)' }}>−</button>
+                <button type="button" onClick={() => setFormData(p => ({...p, passengersCount: Math.max(1, p.passengersCount - 1)}))} style={{ fontSize: '20px', padding: '0 10px', color: 'var(--link-color)', background: 'none', border: 'none' }}>−</button>
                 <span style={{ fontSize: '17px', minWidth: '20px', textAlign: 'center' }}>{formData.passengersCount}</span>
-                <button type="button" onClick={() => setFormData(p => ({...p, passengersCount: Math.min(8, p.passengersCount + 1)}))} style={{ fontSize: '20px', padding: '0 10px', color: 'var(--link-color)' }}>+</button>
+                <button type="button" onClick={() => setFormData(p => ({...p, passengersCount: Math.min(8, p.passengersCount + 1)}))} style={{ fontSize: '20px', padding: '0 10px', color: 'var(--link-color)', background: 'none', border: 'none' }}>+</button>
             </div>
           </div>
 
@@ -233,12 +208,12 @@ function PassengerOrder({ user }) {
         <div className="form-section">
            <h3>Стоимость</h3>
            <div className="input-group">
-            <button type="button" onClick={toggleCurrency} style={{ textAlign: 'left', padding: 0, color: 'var(--link-color)', fontSize: '16px' }}>
-              {currency === 'KZT' ? 'Валюта: Тенге (₸)' : 'Валюта: Сум (UZS)'}
+            <button type="button" onClick={toggleCurrency} style={{ textAlign: 'left', padding: 0, color: 'var(--link-color)', fontSize: '16px', background: 'none', border: 'none', width: '100%' }}>
+              {currency === 'KZT' ? 'Валюта: Тенге (₸) ⇄' : 'Валюта: Сум (UZS) ⇄'}
             </button>
            </div>
            <div className="input-group">
-            <label>Предложите цену</label>
+            <label>Ваша цена</label>
             <input
               type="number"
               name="price"
