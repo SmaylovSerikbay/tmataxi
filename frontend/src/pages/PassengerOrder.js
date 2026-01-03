@@ -23,13 +23,30 @@ function PassengerOrder({ user }) {
 
   useEffect(() => {
     const tgUser = getTelegramUser();
-    if (tgUser && !user) {
-      // Можно попробовать получить номер телефона из Telegram
+    if (tgUser) {
+      // Автоматически регистрируем пассажира при загрузке
+      const autoRegister = async () => {
+        try {
+          await registerPassenger(
+            tgUser.id.toString(),
+            `${tgUser.first_name} ${tgUser.last_name || ''}`.trim(),
+            tgUser.phone_number || ''
+          );
+        } catch (error) {
+          console.error('Auto-register error:', error);
+        }
+      };
+      autoRegister();
+      
+      // Пытаемся получить телефон из Telegram
       if (window.Telegram?.WebApp) {
-        window.Telegram.WebApp.requestContact = true;
+        const tg = window.Telegram.WebApp;
+        if (tg.initDataUnsafe?.user?.phone_number) {
+          setFormData(prev => ({ ...prev, phone: tg.initDataUnsafe.user.phone_number }));
+        }
       }
     }
-  }, [user]);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -50,20 +67,20 @@ function PassengerOrder({ user }) {
         return;
       }
 
-      // Регистрируем пассажира
+      // Получаем или создаем пассажира (автоматически)
       const passenger = await registerPassenger(
         tgUser.id.toString(),
         `${tgUser.first_name} ${tgUser.last_name || ''}`.trim(),
-        formData.phone
+        formData.phone || tgUser.phone_number || ''
       );
 
       // Сохраняем passengerId в localStorage
-      localStorage.setItem('passengerId', passenger._id);
+      localStorage.setItem('passengerId', passenger.id || passenger._id);
 
       // Создаем заказ
       const orderDate = new Date(`${formData.date}T${formData.time}`);
       await createOrder({
-        passengerId: passenger._id,
+        passengerId: passenger.id || passenger._id,
         from: {
           city: formData.fromCity,
           address: formData.fromAddress

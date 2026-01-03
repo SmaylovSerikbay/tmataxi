@@ -46,7 +46,7 @@ function DriverPanel({ user }) {
     if (driver && isOnline) {
       // Подключаемся к Socket.io
       const newSocket = io(API_URL);
-      newSocket.emit('driver-online', driver._id);
+      newSocket.emit('driver-online', driver.id || driver._id);
       
       newSocket.on('new-order', (order) => {
         setOrders(prev => [order, ...prev]);
@@ -62,12 +62,13 @@ function DriverPanel({ user }) {
   }, [driver, isOnline]);
 
   useEffect(() => {
-    if (isOnline && driver) {
-      loadAvailableOrders();
-      const interval = setInterval(loadAvailableOrders, 10000); // Обновляем каждые 10 секунд
-      return () => clearInterval(interval);
-    }
-  }, [isOnline, driver]);
+      if (isOnline && driver) {
+        loadAvailableOrders();
+        const interval = setInterval(loadAvailableOrders, 10000);
+        return () => clearInterval(interval);
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOnline, driver]);
 
   const loadDriverData = async (telegramId) => {
     try {
@@ -82,10 +83,9 @@ function DriverPanel({ user }) {
       });
     } catch (error) {
       if (error.response?.status === 404) {
-        // Таксист не зарегистрирован
-        const tgUser = getTelegramUser();
+        // Таксист не зарегистрирован - имя и телефон будут из Telegram
         setFormData({
-          name: `${tgUser.first_name} ${tgUser.last_name || ''}`.trim(),
+          name: '',
           phone: '',
           carModel: '',
           carNumber: ''
@@ -111,18 +111,23 @@ function DriverPanel({ user }) {
 
     try {
       const tgUser = getTelegramUser();
+      if (!tgUser) {
+        alert('Ошибка: не удалось получить данные пользователя');
+        return;
+      }
+      
+      // Автоматически используем данные из Telegram
       const driverData = await registerDriver(
         tgUser.id.toString(),
-        formData.name,
-        formData.phone,
+        `${tgUser.first_name} ${tgUser.last_name || ''}`.trim(),
+        tgUser.phone_number || '',
         formData.carModel,
         formData.carNumber
       );
       setDriver(driverData);
-      alert('Регистрация успешна!');
     } catch (error) {
       console.error('Error registering driver:', error);
-      alert('Ошибка при регистрации: ' + (error.response?.data?.error || error.message));
+      alert('Ошибка: ' + (error.response?.data?.error || error.message));
     } finally {
       setRegistering(false);
     }
@@ -131,7 +136,7 @@ function DriverPanel({ user }) {
   const handleToggleOnline = async () => {
     try {
       const newStatus = !isOnline;
-      await setDriverStatus(driver._id, newStatus);
+      await setDriverStatus(driver.id || driver._id, newStatus);
       setIsOnline(newStatus);
     } catch (error) {
       console.error('Error updating status:', error);
@@ -141,7 +146,7 @@ function DriverPanel({ user }) {
 
   const handleAcceptOrder = async (orderId) => {
     try {
-      await acceptOrder(orderId, driver._id);
+      await acceptOrder(orderId, driver.id || driver._id);
       setOrders(prev => prev.filter(order => order._id !== orderId));
       alert('Заказ принят!');
       navigate('/my-orders');
@@ -172,30 +177,11 @@ function DriverPanel({ user }) {
     return (
       <div className="container">
         <div className="page-header">
-          <h2>Регистрация таксиста</h2>
+          <h2>Данные автомобиля</h2>
           <button className="btn-back" onClick={() => navigate('/')}>← Назад</button>
         </div>
 
         <form onSubmit={handleRegister} className="driver-form">
-          <div className="input-group">
-            <label>Имя *</label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              required
-            />
-          </div>
-          <div className="input-group">
-            <label>Телефон *</label>
-            <input
-              type="tel"
-              value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              required
-              placeholder="+7 (999) 123-45-67"
-            />
-          </div>
           <div className="input-group">
             <label>Модель автомобиля *</label>
             <input
@@ -203,7 +189,8 @@ function DriverPanel({ user }) {
               value={formData.carModel}
               onChange={(e) => setFormData({ ...formData, carModel: e.target.value })}
               required
-              placeholder="Например: Toyota Camry"
+              placeholder="Toyota Camry"
+              autoFocus
             />
           </div>
           <div className="input-group">
@@ -211,13 +198,14 @@ function DriverPanel({ user }) {
             <input
               type="text"
               value={formData.carNumber}
-              onChange={(e) => setFormData({ ...formData, carNumber: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, carNumber: e.target.value.toUpperCase() })}
               required
               placeholder="А123БВ777"
+              maxLength="9"
             />
           </div>
           <button type="submit" className="btn" disabled={registering}>
-            {registering ? 'Регистрация...' : 'Зарегистрироваться'}
+            {registering ? 'Сохранение...' : 'Сохранить'}
           </button>
         </form>
       </div>

@@ -1,11 +1,9 @@
 .no-orders {
   text-align: center;
   padding: 64px 24px;
-  background: #FFFFFF;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-color);
-  animation: fadeInUp 0.5s ease-out;
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
 }
 
 .no-orders p {
@@ -17,16 +15,4 @@
 
 .orders-list {
   margin-top: 24px;
-  animation: fadeInUp 0.5s ease-out;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
