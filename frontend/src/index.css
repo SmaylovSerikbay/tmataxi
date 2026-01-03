@@ -6,53 +6,66 @@
 }
 
 :root {
-  /* Telegram Dark Theme Colors - Exact Match */
-  --tg-theme-bg-color: #212121;
-  --tg-theme-secondary-bg-color: #2B2B2B;
-  --tg-theme-text-color: #FFFFFF;
-  --tg-theme-hint-color: #707579;
-  --tg-theme-link-color: #3390EC;
-  --tg-theme-button-color: #3390EC;
-  --tg-theme-button-text-color: #FFFFFF;
-  
-  /* Telegram UI Colors */
-  --bg-color: #2B2B2B;
-  --page-bg-color: #212121;
-  --text-color: #FFFFFF;
-  --hint-color: #707579;
-  --link-color: #3390EC;
-  --button-color: #3390EC;
-  --button-text-color: #FFFFFF;
-  --separator-color: rgba(255, 255, 255, 0.12);
-  --card-bg: #2B2B2B;
-  
-  /* Typography */
-  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --font-size-large: 20px;
-  --font-size-title: 20px;
-  --font-size-headline: 17px;
-  --font-size-body: 15px;
-  --font-size-subhead: 14px;
-  --font-size-caption: 13px;
-  
-  /* Spacing */
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 12px;
-  --spacing-lg: 16px;
-  --spacing-xl: 20px;
-  --spacing-xxl: 24px;
-  
-  /* Border Radius - Telegram Style */
-  --radius: 12px;
+  /* Tesla/Apple-ish dark by default */
+  color-scheme: dark;
+
+  /* Design tokens */
+  --ds-bg: #0b0b0c;
+  --ds-surface: #141416;
+  --ds-surface-2: #1b1b1e;
+  --ds-header-bg: rgba(11, 11, 12, 0.78);
+  --ds-nav-bg: rgba(20, 20, 22, 0.82);
+  --ds-text: #f5f5f7;
+  --ds-text-2: rgba(245, 245, 247, 0.72);
+  --ds-text-3: rgba(245, 245, 247, 0.52);
+  --ds-accent: #0a84ff;
+  --ds-success: #34c759;
+  --ds-danger: #ff453a;
+  --ds-border: rgba(245, 245, 247, 0.10);
+  --ds-divider: rgba(245, 245, 247, 0.08);
+  --ds-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+
+  --ds-radius-sm: 10px;
+  --ds-radius-md: 14px;
+  --ds-radius-lg: 18px;
+
+  --ds-space-1: 4px;
+  --ds-space-2: 8px;
+  --ds-space-3: 12px;
+  --ds-space-4: 16px;
+  --ds-space-5: 20px;
+  --ds-space-6: 24px;
+  --ds-space-7: 32px;
+
+  --ds-font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --ds-title: 28px;
+  --ds-headline: 20px;
+  --ds-body: 16px;
+  --ds-caption: 13px;
+}
+
+/* Telegram can tell us the scheme via dataset.theme (see utils/telegram.js) */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --ds-bg: #f5f5f7;
+  --ds-surface: #ffffff;
+  --ds-surface-2: #f2f2f7;
+  --ds-header-bg: rgba(245, 245, 247, 0.78);
+  --ds-nav-bg: rgba(255, 255, 255, 0.82);
+  --ds-text: #111113;
+  --ds-text-2: rgba(17, 17, 19, 0.68);
+  --ds-text-3: rgba(17, 17, 19, 0.50);
+  --ds-border: rgba(17, 17, 19, 0.10);
+  --ds-divider: rgba(17, 17, 19, 0.08);
+  --ds-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
 }
 
 body {
-  font-family: var(--font-family);
-  background-color: var(--page-bg-color);
-  color: var(--text-color);
-  font-size: var(--font-size-body);
-  line-height: 1.4;
+  font-family: var(--ds-font);
+  background-color: var(--ds-bg);
+  color: var(--ds-text);
+  font-size: var(--ds-body);
+  line-height: 1.45;
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -73,18 +86,18 @@ button {
 
 a {
   text-decoration: none;
-  color: var(--link-color);
+  color: var(--ds-accent);
 }
 
 input, textarea, select {
   font-family: inherit;
-  color: var(--text-color);
-  font-size: var(--font-size-body);
+  color: var(--ds-text);
+  font-size: var(--ds-body);
   background: transparent;
   border: none;
   outline: none;
 }
 
 input::placeholder, textarea::placeholder {
-  color: var(--hint-color);
+  color: var(--ds-text-3);
 }

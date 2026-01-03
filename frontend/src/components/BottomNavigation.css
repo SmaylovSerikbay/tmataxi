@@ -1,52 +1,48 @@
-/* Telegram Bottom Navigation - Exact Match */
+/* Apple/Tesla bottom navigation */
 
 .bottom-nav {
   position: fixed;
-  bottom: 0;
   left: 0;
   right: 0;
-  background-color: #2B2B2B;
-  border-top: 1px solid var(--separator-color);
+  bottom: 0;
+  height: calc(62px + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--ds-nav-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-top: 1px solid var(--ds-divider);
   display: flex;
-  justify-content: space-around;
   align-items: center;
-  padding: 8px 0;
-  padding-bottom: calc(8px + env(safe-area-inset-bottom));
-  height: calc(56px + env(safe-area-inset-bottom));
-  z-index: 1000;
+  justify-content: space-around;
+  z-index: 50;
 }
 
 .nav-item {
   flex: 1;
+  height: 62px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: none;
-  border: none;
-  color: #707579;
-  font-size: 10px;
-  font-weight: 500;
-  gap: 4px;
-  cursor: pointer;
-  padding: 4px 0;
-}
-
-.nav-item:active {
-  opacity: 0.7;
-}
-
-.nav-item.active {
-  color: #3390EC;
+  gap: 6px;
+  color: var(--ds-text-3);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .nav-item svg {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
 }
 
-.nav-item span {
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.01em;
+.nav-item.active {
+  color: var(--ds-accent);
 }
+
+.nav-item:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+

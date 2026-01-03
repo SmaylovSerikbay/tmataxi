@@ -1,12 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-// eslint-disable-next-line no-unused-vars
-import { useNavigate } from 'react-router-dom';
 import { getPassengerOrders, getDriverOrders, getDriver } from '../utils/api';
 import { getTelegramUser } from '../utils/telegram';
 
 function MyOrders({ user, userType }) {
-  // eslint-disable-next-line no-unused-vars
-  const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -66,19 +62,11 @@ function MyOrders({ user, userType }) {
     }
   };
 
-  const getStatusClass = (status) => {
-    switch (status) {
-      case 'pending': return 'status-pending';
-      case 'accepted': return 'status-accepted';
-      case 'completed': return 'status-completed';
-      default: return '';
-    }
-  };
-
   if (loading) {
     return (
-      <div style={{ padding: '48px 20px', textAlign: 'center', color: 'var(--hint-color)' }}>
-        <p style={{ fontSize: '15px', fontWeight: '400' }}>Загрузка...</p>
+      <div className="ds-empty">
+        <div className="ds-emptyTitle">Загрузка…</div>
+        <div className="ds-emptyText">Обновляем список заказов</div>
       </div>
     );
   }
@@ -86,103 +74,94 @@ function MyOrders({ user, userType }) {
   return (
     <div>
       <div className="page-header">
-        <h2>{userType === 'driver' ? 'Взятые заказы' : 'Мои поездки'}</h2>
+        <h2>{userType === 'driver' ? 'Мои заказы' : 'Мои поездки'}</h2>
       </div>
 
       {orders.length === 0 ? (
-        <div className="no-orders">
-          <p style={{ fontSize: '15px', marginBottom: '8px' }}>История заказов пуста</p>
-          <p style={{ fontSize: '14px' }}>
-            {userType === 'driver' ? 'Принимайте заказы в ленте' : 'Создайте новый заказ'}
-          </p>
+        <div className="ds-empty">
+          <div className="ds-emptyTitle">Пока пусто</div>
+          <div className="ds-emptyText">
+            {userType === 'driver' ? 'Принимайте заказы в ленте' : 'Создайте новый заказ на главной'}
+          </div>
         </div>
       ) : (
-        <div className="orders-list">
-          {orders.map(order => (
-            <div key={order._id || order.id} className="order-card">
-              <div className="order-header">
-                <span className="order-price">
-                  {order.price} {order.currency === 'UZS' ? 'сум' : '₸'}
-                </span>
-                <span className={`status-badge ${getStatusClass(order.status)}`}>
-                  {getStatusText(order.status)}
-                </span>
-              </div>
-              
-              <div className="order-info">
-                <strong>Откуда:</strong> {order.from?.city || order.from_city}
-              </div>
-              <div className="order-info" style={{ marginBottom: '4px', paddingLeft: '12px' }}>
-                {order.from?.address || order.from_address}
-              </div>
-              
-              <div className="order-info">
-                <strong>Куда:</strong> {order.to?.city || order.to_city}
-              </div>
-              <div className="order-info" style={{ marginBottom: '12px', paddingLeft: '12px' }}>
-                {order.to?.address || order.to_address}
-              </div>
-              
-              <div className="order-info" style={{ 
-                fontSize: '14px', 
-                color: 'var(--hint-color)',
-                marginBottom: '12px'
-              }}>
-                {new Date(order.date).toLocaleString('ru-RU', { 
-                  month: 'short', 
-                  day: 'numeric', 
-                  hour: '2-digit', 
-                  minute: '2-digit' 
-                })}
-              </div>
-              
-              {userType === 'passenger' && order.driver && (
-                <div className="driver-info-box">
-                  <div style={{ fontWeight: '500', marginBottom: '8px', fontSize: '15px' }}>
-                    🚕 Вас везет: {order.driver.name}
-                  </div>
-                  <div style={{ fontSize: '14px', color: 'var(--hint-color)', marginBottom: '12px' }}>
-                    {order.driver.carModel || order.driver.car_model} • {order.driver.carNumber || order.driver.car_number}
-                  </div>
-                  <a 
-                    href={`tel:${order.driver.phone}`} 
-                    style={{ 
-                      display: 'inline-block',
-                      fontSize: '14px',
-                      fontWeight: '500',
-                      color: '#4CAF50',
-                      textDecoration: 'none',
-                      padding: '8px 12px',
-                      background: 'rgba(76, 175, 80, 0.15)',
-                      borderRadius: '8px'
-                    }}
-                  >
-                    📞 Позвонить водителю
-                  </a>
-                </div>
-              )}
+        <div className="ds-section">
+          <div className="ds-sectionTitle">История</div>
+          <div className="ds-stack">
+            {orders.map((order) => {
+              const currencyLabel = order.currency === 'UZS' ? 'сум' : '₸';
+              const badgeClass =
+                order.status === 'accepted'
+                  ? 'ds-badgeOk'
+                  : order.status === 'pending'
+                    ? 'ds-badgeWarn'
+                    : '';
 
-              {userType === 'driver' && order.phone && (
-                <div className="driver-info-box">
-                  <a 
-                    href={`tel:${order.phone}`} 
-                    style={{ 
-                      display: 'inline-block',
-                      fontSize: '14px',
-                      fontWeight: '500',
-                      color: '#4CAF50',
-                      textDecoration: 'none',
-                      padding: '8px 12px',
-                      background: 'rgba(76, 175, 80, 0.15)',
-                      borderRadius: '8px'
-                    }}
-                  >
-                    📞 Позвонить пассажиру
-                  </a>
+              const when = new Date(order.date).toLocaleString('ru-RU', {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              });
+
+              const fromCity = order.from?.city || order.from_city;
+              const fromAddr = order.from?.address || order.from_address;
+              const toCity = order.to?.city || order.to_city;
+              const toAddr = order.to?.address || order.to_address;
+
+              return (
+                <div key={order._id || order.id} className="ds-card ds-cardFlat">
+                  <div className="ds-orderMeta">
+                    <div className="ds-price">
+                      {order.price} {currencyLabel}
+                    </div>
+                    <div className={`ds-badge ${badgeClass}`}>{getStatusText(order.status)}</div>
+                  </div>
+
+                  <div className="ds-row">
+                    <div className="ds-rowLabel">Откуда</div>
+                    <div className="ds-rowValue">
+                      {fromCity}
+                      {fromAddr ? `, ${fromAddr}` : ''}
+                    </div>
+                  </div>
+                  <div className="ds-row">
+                    <div className="ds-rowLabel">Куда</div>
+                    <div className="ds-rowValue">
+                      {toCity}
+                      {toAddr ? `, ${toAddr}` : ''}
+                    </div>
+                  </div>
+
+                  <div className="ds-mutedBox">🕒 {when}</div>
+
+                  {userType === 'passenger' && order.driver && (
+                    <div className="ds-mutedBox">
+                      <div>
+                        🚕 {order.driver.name} • {order.driver.carModel || order.driver.car_model} •{' '}
+                        {order.driver.carNumber || order.driver.car_number}
+                      </div>
+                      {order.driver.phone && (
+                        <div className="ds-mt2">
+                          <a className="ds-link" href={`tel:${order.driver.phone}`}>
+                            Позвонить водителю
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {userType === 'driver' && order.phone && (
+                    <div className="ds-mutedBox">
+                      <a className="ds-link" href={`tel:${order.phone}`}>
+                        Позвонить пассажиру
+                      </a>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          ))}
+              );
+            })}
+          </div>
         </div>
       )}
     </div>

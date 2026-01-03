@@ -115,8 +115,9 @@ function DriverPanel({ user }) {
 
   if (loading) {
     return (
-      <div style={{ padding: '48px 20px', textAlign: 'center', color: 'var(--hint-color)' }}>
-        <p style={{ fontSize: '15px', fontWeight: '400' }}>Загрузка...</p>
+      <div className="ds-empty">
+        <div className="ds-emptyTitle">Загрузка…</div>
+        <div className="ds-emptyText">Подготавливаем ленту заказов</div>
       </div>
     );
   }
@@ -125,15 +126,11 @@ function DriverPanel({ user }) {
     return (
       <div>
         <div className="page-header">
-          <h2>Лента заказов</h2>
+          <h2>Заказы</h2>
         </div>
-        <div style={{ padding: '48px 20px', textAlign: 'center' }}>
-          <p style={{ fontSize: '15px', color: 'var(--hint-color)', marginBottom: '8px' }}>
-            Вы не зарегистрированы как водитель
-          </p>
-          <p style={{ fontSize: '14px', color: 'var(--hint-color)' }}>
-            Перейдите в профиль, чтобы зарегистрироваться
-          </p>
+        <div className="ds-empty">
+          <div className="ds-emptyTitle">Вы не зарегистрированы как водитель</div>
+          <div className="ds-emptyText">Откройте «Профиль» → «Стать водителем»</div>
         </div>
       </div>
     );
@@ -142,116 +139,86 @@ function DriverPanel({ user }) {
   return (
     <div>
       <div className="page-header">
-        <h2>Лента заказов</h2>
-        <button
-          className={`btn ${isOnline ? 'btn-online' : 'btn-offline'}`}
-          onClick={handleToggleOnline}
-          style={{ 
-            padding: '6px 12px', 
-            fontSize: '14px', 
-            height: 'auto', 
-            minHeight: '32px',
-            width: 'auto',
-            borderRadius: '16px',
-            fontWeight: '500',
-            margin: 0,
-            background: isOnline ? 'rgba(76, 175, 80, 0.15)' : 'rgba(244, 67, 54, 0.15)',
-            color: isOnline ? '#4CAF50' : '#F44336'
-          }}
-        >
-          {isOnline ? '🟢 Онлайн' : '🔴 Офлайн'}
-        </button>
+        <h2>Заказы</h2>
+        <div className="ds-right">
+          <button
+            className={`ds-pill ${isOnline ? 'ds-pillOn' : 'ds-pillOff'}`}
+            onClick={handleToggleOnline}
+          >
+            {isOnline ? 'Онлайн' : 'Офлайн'}
+          </button>
+        </div>
       </div>
 
       {!isOnline && (
-        <div className="no-orders">
-          <p style={{ fontSize: '15px', marginBottom: '8px' }}>Вы офлайн</p>
-          <p style={{ fontSize: '14px' }}>
-            Включите статус "Онлайн", чтобы видеть заказы
-          </p>
+        <div className="ds-empty">
+          <div className="ds-emptyTitle">Вы офлайн</div>
+          <div className="ds-emptyText">Включите «Онлайн», чтобы получать новые заказы</div>
         </div>
       )}
 
       {isOnline && (
-        <div className="orders-list">
+        <div className="ds-section">
+          <div className="ds-sectionTitle">Доступные</div>
           {orders.length === 0 ? (
-            <div className="no-orders">
-              <p style={{ fontSize: '15px' }}>Поиск заказов...</p>
+            <div className="ds-empty">
+              <div className="ds-emptyTitle">Ищем заказы…</div>
+              <div className="ds-emptyText">Обновляется автоматически</div>
             </div>
           ) : (
-            orders.map(order => (
-              <div key={order._id || order.id} className="order-card">
-                <div className="order-header">
-                  <span className="order-price">
-                    {order.price} {order.currency === 'UZS' ? 'сум' : '₸'}
-                  </span>
-                  <span className="status-badge status-pending">
-                    {new Date(order.date).toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'})}
-                  </span>
-                </div>
-                
-                <div className="order-info">
-                  <strong>Откуда:</strong> {order.from?.city || order.from_city}
-                </div>
-                <div className="order-info" style={{ marginBottom: '4px', paddingLeft: '12px' }}>
-                  {order.from?.address || order.from_address}
-                </div>
-                
-                <div className="order-info">
-                  <strong>Куда:</strong> {order.to?.city || order.to_city}
-                </div>
-                <div className="order-info" style={{ marginBottom: '12px', paddingLeft: '12px' }}>
-                  {order.to?.address || order.to_address}
-                </div>
-                
-                <div style={{ 
-                  display: 'flex', 
-                  gap: '12px', 
-                  alignItems: 'center',
-                  padding: '10px',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  borderRadius: '8px',
-                  marginBottom: '12px'
-                }}>
-                  <span style={{ fontSize: '14px', color: 'var(--hint-color)' }}>
-                    👥 {order.passengersCount || order.passengers_count} пас.
-                  </span>
-                  {order.luggage && (
-                    <span style={{ fontSize: '14px', color: 'var(--hint-color)' }}>
-                      🧳 Багаж
-                    </span>
-                  )}
-                </div>
-                
-                {order.comment && (
-                  <div className="order-info" style={{ 
-                    fontStyle: 'italic', 
-                    color: 'var(--hint-color)',
-                    padding: '10px',
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    borderRadius: '8px',
-                    marginBottom: '12px'
-                  }}>
-                    "{order.comment}"
+            <div className="ds-stack">
+              {orders.map((order) => {
+                const currencyLabel = order.currency === 'UZS' ? 'сум' : '₸';
+                const passengers = order.passengersCount || order.passengers_count;
+                const timeLabel = new Date(order.date).toLocaleTimeString('ru-RU', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                });
+
+                return (
+                  <div key={order._id || order.id} className="ds-card ds-cardFlat">
+                    <div className="ds-orderMeta">
+                      <div className="ds-price">
+                        {order.price} {currencyLabel}
+                      </div>
+                      <div className="ds-badge ds-badgeWarn">{timeLabel}</div>
+                    </div>
+
+                    <div className="ds-row">
+                      <div className="ds-rowLabel">Откуда</div>
+                      <div className="ds-rowValue">{order.from?.city || order.from_city}</div>
+                    </div>
+                    <div className="ds-row">
+                      <div className="ds-rowLabel">Адрес</div>
+                      <div className="ds-rowValue">{order.from?.address || order.from_address}</div>
+                    </div>
+                    <div className="ds-row">
+                      <div className="ds-rowLabel">Куда</div>
+                      <div className="ds-rowValue">{order.to?.city || order.to_city}</div>
+                    </div>
+                    <div className="ds-row">
+                      <div className="ds-rowLabel">Адрес</div>
+                      <div className="ds-rowValue">{order.to?.address || order.to_address}</div>
+                    </div>
+
+                    <div className="ds-mutedBox">
+                      👥 {passengers} • {order.luggage ? '🧳 багаж' : 'без багажа'}
+                    </div>
+
+                    {order.comment && <div className="ds-mutedBox">“{order.comment}”</div>}
+
+                    <div className="ds-actions">
+                      <button className="ds-btn ds-btnSuccess" onClick={() => handleAcceptOrder(order._id || order.id)}>
+                        Принять
+                      </button>
+                      <button className="ds-btn ds-btnDanger" onClick={() => handleRejectOrder(order._id || order.id)}>
+                        Скрыть
+                      </button>
+                    </div>
                   </div>
-                )}
-                
-                <div className="order-actions">
-                  <button
-                    className="btn btn-accept"
-                    onClick={() => handleAcceptOrder(order._id || order.id)}
-                  >
-                    Принять
-                  </button>
-                  <button
-                    className="btn btn-reject"
-                    onClick={() => handleRejectOrder(order._id || order.id)}
-                  >
-                    Скрыть
-                  </button>
-                </div>
-              </div>
-            ))
+                );
+              })}
+            </div>
           )}
         </div>
       )}

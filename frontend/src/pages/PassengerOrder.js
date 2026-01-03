@@ -116,15 +116,21 @@ function PassengerOrder({ user }) {
     <div>
       <div className="page-header">
         <h2>Новый заказ</h2>
+        <div className="ds-right">
+          <button type="button" className="ds-pill" onClick={toggleCurrency}>
+            {currency === 'KZT' ? '₸ KZT' : 'сум UZS'} ⇄
+          </button>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="order-form">
-        <div className="form-section">
-          <h3>Маршрут</h3>
-          <div className="tg-card">
-            <div className="input-group">
-              <label>Откуда</label>
+        <div className="ds-section">
+          <div className="ds-sectionTitle">Маршрут</div>
+          <div className="ds-card ds-cardFlat">
+            <div className="ds-row">
+              <div className="ds-rowLabel">Откуда</div>
               <input
+                className="ds-input"
                 type="text"
                 name="fromCity"
                 value={formData.fromCity}
@@ -133,9 +139,10 @@ function PassengerOrder({ user }) {
                 placeholder="Город"
               />
             </div>
-            <div className="input-group">
-              <label>Адрес</label>
+            <div className="ds-row">
+              <div className="ds-rowLabel">Адрес</div>
               <input
+                className="ds-input"
                 type="text"
                 name="fromAddress"
                 value={formData.fromAddress}
@@ -144,9 +151,10 @@ function PassengerOrder({ user }) {
                 placeholder="Улица, дом"
               />
             </div>
-            <div className="input-group">
-              <label>Куда</label>
+            <div className="ds-row">
+              <div className="ds-rowLabel">Куда</div>
               <input
+                className="ds-input"
                 type="text"
                 name="toCity"
                 value={formData.toCity}
@@ -155,9 +163,10 @@ function PassengerOrder({ user }) {
                 placeholder="Город"
               />
             </div>
-            <div className="input-group">
-              <label>Адрес</label>
+            <div className="ds-row">
+              <div className="ds-rowLabel">Адрес</div>
               <input
+                className="ds-input"
                 type="text"
                 name="toAddress"
                 value={formData.toAddress}
@@ -169,12 +178,13 @@ function PassengerOrder({ user }) {
           </div>
         </div>
 
-        <div className="form-section">
-          <h3>Детали поездки</h3>
-          <div className="tg-card">
-            <div className="input-group">
-              <label>Дата</label>
+        <div className="ds-section">
+          <div className="ds-sectionTitle">Детали</div>
+          <div className="ds-card ds-cardFlat">
+            <div className="ds-row">
+              <div className="ds-rowLabel">Дата</div>
               <input
+                className="ds-input"
                 type="date"
                 name="date"
                 value={formData.date}
@@ -183,9 +193,10 @@ function PassengerOrder({ user }) {
                 min={new Date().toISOString().split('T')[0]}
               />
             </div>
-            <div className="input-group">
-              <label>Время</label>
+            <div className="ds-row">
+              <div className="ds-rowLabel">Время</div>
               <input
+                className="ds-input"
                 type="time"
                 name="time"
                 value={formData.time}
@@ -193,78 +204,58 @@ function PassengerOrder({ user }) {
                 required
               />
             </div>
-            <div className="input-group">
-              <label>Пассажиров</label>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: 'auto' }}>
-                <button 
-                  type="button" 
-                  onClick={() => setFormData(p => ({...p, passengersCount: Math.max(1, p.passengersCount - 1)}))} 
-                  style={{ 
-                    width: '32px', 
-                    height: '32px', 
-                    borderRadius: '6px',
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    color: 'var(--link-color)',
-                    fontSize: '18px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontWeight: '600'
-                  }}
+            <div className="ds-row">
+              <div className="ds-rowLabel">Пассажиры</div>
+              <div className="ds-stepper">
+                <button
+                  type="button"
+                  className="ds-stepperBtn"
+                  onClick={() =>
+                    setFormData((p) => ({
+                      ...p,
+                      passengersCount: Math.max(1, p.passengersCount - 1),
+                    }))
+                  }
                 >
                   −
                 </button>
-                <span style={{ fontSize: '15px', minWidth: '20px', textAlign: 'center', fontWeight: '500' }}>
-                  {formData.passengersCount}
-                </span>
-                <button 
-                  type="button" 
-                  onClick={() => setFormData(p => ({...p, passengersCount: Math.min(8, p.passengersCount + 1)}))} 
-                  style={{ 
-                    width: '32px', 
-                    height: '32px', 
-                    borderRadius: '6px',
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    color: 'var(--link-color)',
-                    fontSize: '18px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontWeight: '600'
-                  }}
+                <div className="ds-stepperValue">{formData.passengersCount}</div>
+                <button
+                  type="button"
+                  className="ds-stepperBtn"
+                  onClick={() =>
+                    setFormData((p) => ({
+                      ...p,
+                      passengersCount: Math.min(8, p.passengersCount + 1),
+                    }))
+                  }
                 >
                   +
                 </button>
               </div>
             </div>
-            <div className="checkbox-group">
-              <input
-                type="checkbox"
-                name="luggage"
-                checked={formData.luggage}
-                onChange={handleChange}
-              />
-              <label>Нужен багажник</label>
+            <div className="ds-row">
+              <div className="ds-rowLabel">Багажник</div>
+              <div className="ds-rowValue">
+                <input
+                  className="ds-check"
+                  type="checkbox"
+                  name="luggage"
+                  checked={formData.luggage}
+                  onChange={handleChange}
+                />
+              </div>
             </div>
           </div>
         </div>
         
-        <div className="form-section">
-          <h3>Стоимость</h3>
-          <div className="tg-card">
-            <button type="button" className="btn" onClick={toggleCurrency}>
-              <span>Валюта</span>
-              <span style={{ color: 'var(--link-color)' }}>
-                {currency === 'KZT' ? '₸ Тенге' : 'сум UZS'} ⇄
-              </span>
-            </button>
-            <div className="input-group">
-              <label>Ваша цена</label>
+        <div className="ds-section">
+          <div className="ds-sectionTitle">Цена</div>
+          <div className="ds-card ds-cardFlat">
+            <div className="ds-row">
+              <div className="ds-rowLabel">Ваша цена</div>
               <input
+                className="ds-input"
                 type="number"
                 name="price"
                 value={formData.price}
@@ -273,30 +264,31 @@ function PassengerOrder({ user }) {
                 min="0"
                 step="100"
                 placeholder={`0 ${currencySymbol}`}
-                style={{ fontWeight: '500', color: '#4CAF50', textAlign: 'right' }}
               />
             </div>
           </div>
         </div>
 
-        <div className="form-section">
-          <div className="tg-card">
-            <div className="input-group textarea-group">
-              <label>Комментарий</label>
+        <div className="ds-section">
+          <div className="ds-sectionTitle">Комментарий</div>
+          <div className="ds-card ds-cardFlat">
+            <div className="ds-row ds-textareaWrap">
               <textarea
+                className="ds-textarea"
                 name="comment"
                 value={formData.comment}
                 onChange={handleChange}
                 placeholder="Дополнительная информация (необязательно)"
-                style={{ minHeight: '80px' }}
               />
             </div>
           </div>
         </div>
 
-        <button type="submit" className="btn btn-primary" disabled={loading}>
-          {loading ? 'Создание...' : 'Создать заказ'}
-        </button>
+        <div className="ds-actions">
+          <button type="submit" className="ds-btn ds-btnPrimary" disabled={loading}>
+            {loading ? 'Создание…' : 'Создать заказ'}
+          </button>
+        </div>
       </form>
     </div>
   );

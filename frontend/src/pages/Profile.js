@@ -82,8 +82,9 @@ function Profile({ user, userType, setUserType }) {
 
   if (loading) {
     return (
-      <div style={{ padding: '48px 20px', textAlign: 'center', color: 'var(--hint-color)' }}>
-        <p style={{ fontSize: '15px', fontWeight: '400' }}>Загрузка...</p>
+      <div className="ds-empty">
+        <div className="ds-emptyTitle">Загрузка…</div>
+        <div className="ds-emptyText">Открываем профиль</div>
       </div>
     );
   }
@@ -94,106 +95,107 @@ function Profile({ user, userType, setUserType }) {
         <h2>Профиль</h2>
       </div>
 
-      <div className="home-profile">
-        <div className="profile-avatar">
-          {getInitials(displayName)}
-        </div>
-        <div className="profile-name">{displayName}</div>
-        {displayUsername && <div className="profile-username">{displayUsername}</div>}
+      <div className="ds-profile">
+        <div className="ds-avatar">{getInitials(displayName)}</div>
+        <div className="ds-name">{displayName}</div>
+        {displayUsername && <div className="ds-username">{displayUsername}</div>}
       </div>
 
-      <div className="form-section">
-        <h3>Режим приложения</h3>
-        <div className="tg-card">
-          <button className="btn" onClick={toggleUserType}>
-            <span>{userType === 'passenger' ? '👤 Пассажир' : '🚖 Водитель'}</span>
-            <div className="item-chevron">
-              <span style={{ color: 'var(--link-color)', fontSize: '14px' }}>Сменить</span>
-              <ChevronRight />
+      <div className="ds-section">
+        <div className="ds-sectionTitle">Режим</div>
+        <div className="ds-card ds-cardFlat">
+          <button type="button" className="ds-row ds-rowBtn" onClick={toggleUserType}>
+            <div className="ds-rowLabel">{userType === 'passenger' ? 'Пассажир' : 'Водитель'}</div>
+            <div className="ds-rowValue">
+              <span className="ds-link">Сменить</span>
+              <span className="ds-chevron"><ChevronRight /></span>
             </div>
           </button>
         </div>
       </div>
 
       {userType === 'driver' && driver && (
-        <div className="form-section">
-          <h3>Данные водителя</h3>
-          <div className="tg-card">
-            <div className="menu-item" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
-              <div style={{ fontWeight: '500', fontSize: '15px' }}>{driver.carModel || driver.car_model}</div>
-              <div style={{ color: 'var(--hint-color)', fontSize: '14px' }}>
-                {driver.carNumber || driver.car_number}
-              </div>
-              {driver.phone && (
-                <div style={{ color: 'var(--hint-color)', fontSize: '14px', marginTop: '4px' }}>
-                  {driver.phone}
-                </div>
-              )}
+        <div className="ds-section">
+          <div className="ds-sectionTitle">Водитель</div>
+          <div className="ds-card ds-cardFlat">
+            <div className="ds-row">
+              <div className="ds-rowLabel">Авто</div>
+              <div className="ds-rowValue">{driver.carModel || driver.car_model}</div>
             </div>
+            <div className="ds-row">
+              <div className="ds-rowLabel">Номер</div>
+              <div className="ds-rowValue">{driver.carNumber || driver.car_number}</div>
+            </div>
+            {driver.phone && (
+              <div className="ds-row">
+                <div className="ds-rowLabel">Телефон</div>
+                <div className="ds-rowValue">{driver.phone}</div>
+              </div>
+            )}
           </div>
         </div>
       )}
 
       {!driver && (
-        <div className="form-section">
-          <h3>Стать водителем</h3>
+        <div className="ds-section">
+          <div className="ds-sectionTitle">Стать водителем</div>
           {!isRegistering ? (
-            <div className="tg-card">
-              <button className="btn" onClick={() => setIsRegistering(true)}>
-                <span>Зарегистрироваться как водитель</span>
-                <div className="item-chevron"><ChevronRight /></div>
+            <div className="ds-card ds-cardFlat">
+              <button type="button" className="ds-row ds-rowBtn" onClick={() => setIsRegistering(true)}>
+                <div className="ds-rowLabel">Регистрация</div>
+                <div className="ds-rowValue">
+                  <span className="ds-link">Открыть</span>
+                  <span className="ds-chevron"><ChevronRight /></span>
+                </div>
               </button>
             </div>
           ) : (
-            <div className="tg-card">
-              <form onSubmit={handleRegisterDriver}>
-                <div className="input-group">
-                  <label>Автомобиль</label>
-                  <input 
-                    type="text" 
+            <form onSubmit={handleRegisterDriver}>
+              <div className="ds-card ds-cardFlat">
+                <div className="ds-row">
+                  <div className="ds-rowLabel">Авто</div>
+                  <input
+                    className="ds-input"
+                    type="text"
                     placeholder="Toyota Camry"
                     value={formData.carModel}
-                    onChange={e => setFormData({...formData, carModel: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, carModel: e.target.value })}
                     required
                     autoFocus
                   />
                 </div>
-                <div className="input-group">
-                  <label>Гос. номер</label>
-                  <input 
-                    type="text" 
-                    placeholder="01 777 AAA"
+                <div className="ds-row">
+                  <div className="ds-rowLabel">Номер</div>
+                  <input
+                    className="ds-input"
+                    type="text"
+                    placeholder="A123BC01"
                     value={formData.carNumber}
-                    onChange={e => setFormData({...formData, carNumber: e.target.value.toUpperCase()})}
+                    onChange={(e) => setFormData({ ...formData, carNumber: e.target.value.toUpperCase() })}
                     required
                     maxLength="12"
                   />
                 </div>
-                <div style={{ padding: '12px 16px' }}>
-                  <button type="submit" className="btn btn-primary" style={{ margin: 0 }}>
-                    Сохранить и начать работу
+                <div className="ds-actions">
+                  <button type="submit" className="ds-btn ds-btnPrimary">
+                    Сохранить
+                  </button>
+                  <button type="button" className="ds-btn ds-btnDanger" onClick={() => setIsRegistering(false)}>
+                    Отмена
                   </button>
                 </div>
-                <button 
-                  type="button" 
-                  className="btn" 
-                  onClick={() => setIsRegistering(false)}
-                  style={{ justifyContent: 'center', color: '#F44336', fontWeight: '400' }}
-                >
-                  Отмена
-                </button>
-              </form>
-            </div>
+              </div>
+            </form>
           )}
         </div>
       )}
 
-      <div className="form-section">
-        <h3>О приложении</h3>
-        <div className="tg-card">
-          <div className="menu-item">
-            <span>Версия</span>
-            <span style={{ color: 'var(--hint-color)', fontSize: '14px' }}>1.0.0</span>
+      <div className="ds-section">
+        <div className="ds-sectionTitle">О приложении</div>
+        <div className="ds-card ds-cardFlat">
+          <div className="ds-row">
+            <div className="ds-rowLabel">Версия</div>
+            <div className="ds-rowValue">1.0.0</div>
           </div>
         </div>
       </div>

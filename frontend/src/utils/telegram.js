@@ -3,6 +3,13 @@ export function initTelegramWebApp() {
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
+    try {
+      // Sync app theme with Telegram (light/dark) to keep UI consistent
+      const scheme = tg.colorScheme === 'light' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = scheme;
+    } catch (e) {
+      // ignore
+    }
     return tg;
   }
   return null;
