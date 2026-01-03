@@ -89,7 +89,6 @@ function PassengerOrder({ user }) {
         alert('Заказ создан!');
       }
       
-      // Reset form
       setFormData(prev => ({
         ...prev,
         fromCity: '',
@@ -122,184 +121,176 @@ function PassengerOrder({ user }) {
       <form onSubmit={handleSubmit} className="order-form">
         <div className="form-section">
           <h3>Маршрут</h3>
-          <div className="input-group">
-            <label>Откуда</label>
-            <input
-              type="text"
-              name="fromCity"
-              value={formData.fromCity}
-              onChange={handleChange}
-              required
-              placeholder="Город отправления"
-            />
-          </div>
-          <div className="input-group">
-            <label>Адрес</label>
-            <input
-              type="text"
-              name="fromAddress"
-              value={formData.fromAddress}
-              onChange={handleChange}
-              required
-              placeholder="Улица, дом"
-            />
-          </div>
-          
-          <div className="input-group">
-            <label>Куда</label>
-            <input
-              type="text"
-              name="toCity"
-              value={formData.toCity}
-              onChange={handleChange}
-              required
-              placeholder="Город назначения"
-            />
-          </div>
-          <div className="input-group">
-            <label>Адрес</label>
-            <input
-              type="text"
-              name="toAddress"
-              value={formData.toAddress}
-              onChange={handleChange}
-              required
-              placeholder="Улица, дом"
-            />
+          <div className="tg-card">
+            <div className="input-group">
+              <label>Откуда</label>
+              <input
+                type="text"
+                name="fromCity"
+                value={formData.fromCity}
+                onChange={handleChange}
+                required
+                placeholder="Город"
+              />
+            </div>
+            <div className="input-group">
+              <label>Адрес</label>
+              <input
+                type="text"
+                name="fromAddress"
+                value={formData.fromAddress}
+                onChange={handleChange}
+                required
+                placeholder="Улица, дом"
+              />
+            </div>
+            <div className="input-group">
+              <label>Куда</label>
+              <input
+                type="text"
+                name="toCity"
+                value={formData.toCity}
+                onChange={handleChange}
+                required
+                placeholder="Город"
+              />
+            </div>
+            <div className="input-group">
+              <label>Адрес</label>
+              <input
+                type="text"
+                name="toAddress"
+                value={formData.toAddress}
+                onChange={handleChange}
+                required
+                placeholder="Улица, дом"
+              />
+            </div>
           </div>
         </div>
 
         <div className="form-section">
           <h3>Детали поездки</h3>
-          <div className="input-group">
-            <label>Дата</label>
-            <input
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              required
-              min={new Date().toISOString().split('T')[0]}
-            />
-          </div>
-          <div className="input-group">
-            <label>Время</label>
-            <input
-              type="time"
-              name="time"
-              value={formData.time}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          
-          <div className="input-group">
-            <label>Пассажиров</label>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginLeft: 'auto' }}>
-              <button 
-                type="button" 
-                onClick={() => setFormData(p => ({...p, passengersCount: Math.max(1, p.passengersCount - 1)}))} 
-                style={{ 
-                  width: '36px', 
-                  height: '36px', 
-                  borderRadius: '8px',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  color: 'var(--link-color)',
-                  fontSize: '20px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontWeight: '600'
-                }}
-              >
-                −
-              </button>
-              <span style={{ fontSize: '17px', minWidth: '24px', textAlign: 'center', fontWeight: '600' }}>
-                {formData.passengersCount}
-              </span>
-              <button 
-                type="button" 
-                onClick={() => setFormData(p => ({...p, passengersCount: Math.min(8, p.passengersCount + 1)}))} 
-                style={{ 
-                  width: '36px', 
-                  height: '36px', 
-                  borderRadius: '8px',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  color: 'var(--link-color)',
-                  fontSize: '20px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontWeight: '600'
-                }}
-              >
-                +
-              </button>
+          <div className="tg-card">
+            <div className="input-group">
+              <label>Дата</label>
+              <input
+                type="date"
+                name="date"
+                value={formData.date}
+                onChange={handleChange}
+                required
+                min={new Date().toISOString().split('T')[0]}
+              />
             </div>
-          </div>
-
-          <div className="checkbox-group">
-            <input
-              type="checkbox"
-              name="luggage"
-              checked={formData.luggage}
-              onChange={handleChange}
-            />
-            <label>Нужен багажник</label>
+            <div className="input-group">
+              <label>Время</label>
+              <input
+                type="time"
+                name="time"
+                value={formData.time}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="input-group">
+              <label>Пассажиров</label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: 'auto' }}>
+                <button 
+                  type="button" 
+                  onClick={() => setFormData(p => ({...p, passengersCount: Math.max(1, p.passengersCount - 1)}))} 
+                  style={{ 
+                    width: '32px', 
+                    height: '32px', 
+                    borderRadius: '6px',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    color: 'var(--link-color)',
+                    fontSize: '18px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontWeight: '600'
+                  }}
+                >
+                  −
+                </button>
+                <span style={{ fontSize: '15px', minWidth: '20px', textAlign: 'center', fontWeight: '500' }}>
+                  {formData.passengersCount}
+                </span>
+                <button 
+                  type="button" 
+                  onClick={() => setFormData(p => ({...p, passengersCount: Math.min(8, p.passengersCount + 1)}))} 
+                  style={{ 
+                    width: '32px', 
+                    height: '32px', 
+                    borderRadius: '6px',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    color: 'var(--link-color)',
+                    fontSize: '18px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontWeight: '600'
+                  }}
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <div className="checkbox-group">
+              <input
+                type="checkbox"
+                name="luggage"
+                checked={formData.luggage}
+                onChange={handleChange}
+              />
+              <label>Нужен багажник</label>
+            </div>
           </div>
         </div>
         
         <div className="form-section">
           <h3>Стоимость</h3>
-          <div className="input-group">
-            <label>Валюта</label>
-            <button 
-              type="button" 
-              onClick={toggleCurrency} 
-              style={{ 
-                marginLeft: 'auto',
-                background: 'none',
-                border: 'none',
-                color: 'var(--link-color)',
-                fontSize: '17px',
-                fontWeight: '400',
-                cursor: 'pointer',
-                padding: 0
-              }}
-            >
-              {currency === 'KZT' ? '₸ Тенге' : 'сум UZS'} ⇄
+          <div className="tg-card">
+            <button type="button" className="btn" onClick={toggleCurrency}>
+              <span>Валюта</span>
+              <span style={{ color: 'var(--link-color)' }}>
+                {currency === 'KZT' ? '₸ Тенге' : 'сум UZS'} ⇄
+              </span>
             </button>
-          </div>
-          <div className="input-group">
-            <label>Ваша цена</label>
-            <input
-              type="number"
-              name="price"
-              value={formData.price}
-              onChange={handleChange}
-              required
-              min="0"
-              step="100"
-              placeholder={`0 ${currencySymbol}`}
-              style={{ fontWeight: '600', color: '#34C759', textAlign: 'right' }}
-            />
+            <div className="input-group">
+              <label>Ваша цена</label>
+              <input
+                type="number"
+                name="price"
+                value={formData.price}
+                onChange={handleChange}
+                required
+                min="0"
+                step="100"
+                placeholder={`0 ${currencySymbol}`}
+                style={{ fontWeight: '500', color: '#4CAF50', textAlign: 'right' }}
+              />
+            </div>
           </div>
         </div>
 
         <div className="form-section">
-          <div className="input-group textarea-group">
-            <label>Комментарий</label>
-            <textarea
-              name="comment"
-              value={formData.comment}
-              onChange={handleChange}
-              placeholder="Дополнительная информация (необязательно)"
-              style={{ minHeight: '100px' }}
-            />
+          <div className="tg-card">
+            <div className="input-group textarea-group">
+              <label>Комментарий</label>
+              <textarea
+                name="comment"
+                value={formData.comment}
+                onChange={handleChange}
+                placeholder="Дополнительная информация (необязательно)"
+                style={{ minHeight: '80px' }}
+              />
+            </div>
           </div>
         </div>
 

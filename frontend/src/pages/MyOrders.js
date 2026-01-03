@@ -39,7 +39,6 @@ function MyOrders({ user, userType }) {
         }
       }
 
-      // Sort by date desc
       ordersData.sort((a, b) => new Date(b.date) - new Date(a.date));
       setOrders(ordersData);
     } catch (error) {
@@ -79,7 +78,7 @@ function MyOrders({ user, userType }) {
   if (loading) {
     return (
       <div style={{ padding: '48px 20px', textAlign: 'center', color: 'var(--hint-color)' }}>
-        <p style={{ fontSize: '17px', fontWeight: '400' }}>Загрузка...</p>
+        <p style={{ fontSize: '15px', fontWeight: '400' }}>Загрузка...</p>
       </div>
     );
   }
@@ -91,9 +90,9 @@ function MyOrders({ user, userType }) {
       </div>
 
       {orders.length === 0 ? (
-        <div className="no-orders" style={{ marginTop: '80px' }}>
-          <p style={{ fontSize: '17px', marginBottom: '8px' }}>История заказов пуста</p>
-          <p style={{ fontSize: '15px', color: 'var(--hint-color)' }}>
+        <div className="no-orders">
+          <p style={{ fontSize: '15px', marginBottom: '8px' }}>История заказов пуста</p>
+          <p style={{ fontSize: '14px' }}>
             {userType === 'driver' ? 'Принимайте заказы в ленте' : 'Создайте новый заказ'}
           </p>
         </div>
@@ -113,21 +112,21 @@ function MyOrders({ user, userType }) {
               <div className="order-info">
                 <strong>Откуда:</strong> {order.from?.city || order.from_city}
               </div>
-              <div className="order-info" style={{ marginBottom: '4px', paddingLeft: '16px' }}>
+              <div className="order-info" style={{ marginBottom: '4px', paddingLeft: '12px' }}>
                 {order.from?.address || order.from_address}
               </div>
               
               <div className="order-info">
                 <strong>Куда:</strong> {order.to?.city || order.to_city}
               </div>
-              <div className="order-info" style={{ marginBottom: '16px', paddingLeft: '16px' }}>
+              <div className="order-info" style={{ marginBottom: '12px', paddingLeft: '12px' }}>
                 {order.to?.address || order.to_address}
               </div>
               
               <div className="order-info" style={{ 
-                fontSize: '15px', 
+                fontSize: '14px', 
                 color: 'var(--hint-color)',
-                marginBottom: '16px'
+                marginBottom: '12px'
               }}>
                 {new Date(order.date).toLocaleString('ru-RU', { 
                   month: 'short', 
@@ -139,22 +138,22 @@ function MyOrders({ user, userType }) {
               
               {userType === 'passenger' && order.driver && (
                 <div className="driver-info-box">
-                  <div style={{ fontWeight: '600', marginBottom: '8px', fontSize: '17px' }}>
+                  <div style={{ fontWeight: '500', marginBottom: '8px', fontSize: '15px' }}>
                     🚕 Вас везет: {order.driver.name}
                   </div>
-                  <div style={{ fontSize: '15px', color: 'var(--hint-color)', marginBottom: '12px' }}>
+                  <div style={{ fontSize: '14px', color: 'var(--hint-color)', marginBottom: '12px' }}>
                     {order.driver.carModel || order.driver.car_model} • {order.driver.carNumber || order.driver.car_number}
                   </div>
                   <a 
                     href={`tel:${order.driver.phone}`} 
                     style={{ 
                       display: 'inline-block',
-                      fontSize: '15px',
+                      fontSize: '14px',
                       fontWeight: '500',
-                      color: '#34C759',
+                      color: '#4CAF50',
                       textDecoration: 'none',
-                      padding: '8px 16px',
-                      background: 'rgba(52, 199, 89, 0.1)',
+                      padding: '8px 12px',
+                      background: 'rgba(76, 175, 80, 0.15)',
                       borderRadius: '8px'
                     }}
                   >
@@ -169,12 +168,12 @@ function MyOrders({ user, userType }) {
                     href={`tel:${order.phone}`} 
                     style={{ 
                       display: 'inline-block',
-                      fontSize: '15px',
+                      fontSize: '14px',
                       fontWeight: '500',
-                      color: '#34C759',
+                      color: '#4CAF50',
                       textDecoration: 'none',
-                      padding: '8px 16px',
-                      background: 'rgba(52, 199, 89, 0.1)',
+                      padding: '8px 12px',
+                      background: 'rgba(76, 175, 80, 0.15)',
                       borderRadius: '8px'
                     }}
                   >

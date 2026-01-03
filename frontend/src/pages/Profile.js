@@ -83,7 +83,7 @@ function Profile({ user, userType, setUserType }) {
   if (loading) {
     return (
       <div style={{ padding: '48px 20px', textAlign: 'center', color: 'var(--hint-color)' }}>
-        <p style={{ fontSize: '17px', fontWeight: '400' }}>Загрузка...</p>
+        <p style={{ fontSize: '15px', fontWeight: '400' }}>Загрузка...</p>
       </div>
     );
   }
@@ -104,27 +104,32 @@ function Profile({ user, userType, setUserType }) {
 
       <div className="form-section">
         <h3>Режим приложения</h3>
-        <button className="btn" onClick={toggleUserType}>
-          <span>{userType === 'passenger' ? '👤 Пассажир' : '🚖 Водитель'}</span>
-          <div style={{ color: 'var(--link-color)', fontSize: '15px', fontWeight: '400' }}>
-            Сменить →
-          </div>
-        </button>
+        <div className="tg-card">
+          <button className="btn" onClick={toggleUserType}>
+            <span>{userType === 'passenger' ? '👤 Пассажир' : '🚖 Водитель'}</span>
+            <div className="item-chevron">
+              <span style={{ color: 'var(--link-color)', fontSize: '14px' }}>Сменить</span>
+              <ChevronRight />
+            </div>
+          </button>
+        </div>
       </div>
 
       {userType === 'driver' && driver && (
         <div className="form-section">
           <h3>Данные водителя</h3>
-          <div className="menu-item" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
-            <div style={{ fontWeight: '600', fontSize: '17px' }}>{driver.carModel || driver.car_model}</div>
-            <div style={{ color: 'var(--hint-color)', fontSize: '15px' }}>
-              {driver.carNumber || driver.car_number}
-            </div>
-            {driver.phone && (
-              <div style={{ color: 'var(--hint-color)', fontSize: '15px', marginTop: '4px' }}>
-                {driver.phone}
+          <div className="tg-card">
+            <div className="menu-item" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
+              <div style={{ fontWeight: '500', fontSize: '15px' }}>{driver.carModel || driver.car_model}</div>
+              <div style={{ color: 'var(--hint-color)', fontSize: '14px' }}>
+                {driver.carNumber || driver.car_number}
               </div>
-            )}
+              {driver.phone && (
+                <div style={{ color: 'var(--hint-color)', fontSize: '14px', marginTop: '4px' }}>
+                  {driver.phone}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -133,55 +138,63 @@ function Profile({ user, userType, setUserType }) {
         <div className="form-section">
           <h3>Стать водителем</h3>
           {!isRegistering ? (
-            <button className="btn" onClick={() => setIsRegistering(true)}>
-              <span>Зарегистрироваться как водитель</span>
-              <div className="item-chevron"><ChevronRight /></div>
-            </button>
+            <div className="tg-card">
+              <button className="btn" onClick={() => setIsRegistering(true)}>
+                <span>Зарегистрироваться как водитель</span>
+                <div className="item-chevron"><ChevronRight /></div>
+              </button>
+            </div>
           ) : (
-            <form onSubmit={handleRegisterDriver}>
-              <div className="input-group">
-                <label>Автомобиль</label>
-                <input 
-                  type="text" 
-                  placeholder="Toyota Camry"
-                  value={formData.carModel}
-                  onChange={e => setFormData({...formData, carModel: e.target.value})}
-                  required
-                  autoFocus
-                />
-              </div>
-              <div className="input-group">
-                <label>Гос. номер</label>
-                <input 
-                  type="text" 
-                  placeholder="01 777 AAA"
-                  value={formData.carNumber}
-                  onChange={e => setFormData({...formData, carNumber: e.target.value.toUpperCase()})}
-                  required
-                  maxLength="12"
-                />
-              </div>
-              <button type="submit" className="btn btn-primary">
-                Сохранить и начать работу
-              </button>
-              <button 
-                type="button" 
-                className="btn" 
-                onClick={() => setIsRegistering(false)}
-                style={{ justifyContent: 'center', color: '#FF3B30', fontWeight: '400' }}
-              >
-                Отмена
-              </button>
-            </form>
+            <div className="tg-card">
+              <form onSubmit={handleRegisterDriver}>
+                <div className="input-group">
+                  <label>Автомобиль</label>
+                  <input 
+                    type="text" 
+                    placeholder="Toyota Camry"
+                    value={formData.carModel}
+                    onChange={e => setFormData({...formData, carModel: e.target.value})}
+                    required
+                    autoFocus
+                  />
+                </div>
+                <div className="input-group">
+                  <label>Гос. номер</label>
+                  <input 
+                    type="text" 
+                    placeholder="01 777 AAA"
+                    value={formData.carNumber}
+                    onChange={e => setFormData({...formData, carNumber: e.target.value.toUpperCase()})}
+                    required
+                    maxLength="12"
+                  />
+                </div>
+                <div style={{ padding: '12px 16px' }}>
+                  <button type="submit" className="btn btn-primary" style={{ margin: 0 }}>
+                    Сохранить и начать работу
+                  </button>
+                </div>
+                <button 
+                  type="button" 
+                  className="btn" 
+                  onClick={() => setIsRegistering(false)}
+                  style={{ justifyContent: 'center', color: '#F44336', fontWeight: '400' }}
+                >
+                  Отмена
+                </button>
+              </form>
+            </div>
           )}
         </div>
       )}
 
       <div className="form-section">
         <h3>О приложении</h3>
-        <div className="menu-item">
-          <span>Версия</span>
-          <span style={{ color: 'var(--hint-color)', fontSize: '15px' }}>1.0.0</span>
+        <div className="tg-card">
+          <div className="menu-item">
+            <span>Версия</span>
+            <span style={{ color: 'var(--hint-color)', fontSize: '14px' }}>1.0.0</span>
+          </div>
         </div>
       </div>
     </div>

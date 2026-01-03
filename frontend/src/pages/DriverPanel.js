@@ -116,7 +116,7 @@ function DriverPanel({ user }) {
   if (loading) {
     return (
       <div style={{ padding: '48px 20px', textAlign: 'center', color: 'var(--hint-color)' }}>
-        <p style={{ fontSize: '17px', fontWeight: '400' }}>Загрузка...</p>
+        <p style={{ fontSize: '15px', fontWeight: '400' }}>Загрузка...</p>
       </div>
     );
   }
@@ -128,10 +128,10 @@ function DriverPanel({ user }) {
           <h2>Лента заказов</h2>
         </div>
         <div style={{ padding: '48px 20px', textAlign: 'center' }}>
-          <p style={{ fontSize: '17px', color: 'var(--hint-color)', marginBottom: '16px' }}>
+          <p style={{ fontSize: '15px', color: 'var(--hint-color)', marginBottom: '8px' }}>
             Вы не зарегистрированы как водитель
           </p>
-          <p style={{ fontSize: '15px', color: 'var(--hint-color)' }}>
+          <p style={{ fontSize: '14px', color: 'var(--hint-color)' }}>
             Перейдите в профиль, чтобы зарегистрироваться
           </p>
         </div>
@@ -147,14 +147,16 @@ function DriverPanel({ user }) {
           className={`btn ${isOnline ? 'btn-online' : 'btn-offline'}`}
           onClick={handleToggleOnline}
           style={{ 
-            padding: '8px 16px', 
-            fontSize: '15px', 
+            padding: '6px 12px', 
+            fontSize: '14px', 
             height: 'auto', 
-            minHeight: '36px',
+            minHeight: '32px',
             width: 'auto',
-            borderRadius: '18px',
-            fontWeight: '600',
-            margin: 0
+            borderRadius: '16px',
+            fontWeight: '500',
+            margin: 0,
+            background: isOnline ? 'rgba(76, 175, 80, 0.15)' : 'rgba(244, 67, 54, 0.15)',
+            color: isOnline ? '#4CAF50' : '#F44336'
           }}
         >
           {isOnline ? '🟢 Онлайн' : '🔴 Офлайн'}
@@ -162,9 +164,9 @@ function DriverPanel({ user }) {
       </div>
 
       {!isOnline && (
-        <div className="no-orders" style={{ marginTop: '48px' }}>
-          <p style={{ fontSize: '17px', marginBottom: '8px' }}>Вы офлайн</p>
-          <p style={{ fontSize: '15px', color: 'var(--hint-color)' }}>
+        <div className="no-orders">
+          <p style={{ fontSize: '15px', marginBottom: '8px' }}>Вы офлайн</p>
+          <p style={{ fontSize: '14px' }}>
             Включите статус "Онлайн", чтобы видеть заказы
           </p>
         </div>
@@ -173,8 +175,8 @@ function DriverPanel({ user }) {
       {isOnline && (
         <div className="orders-list">
           {orders.length === 0 ? (
-            <div className="no-orders" style={{ marginTop: '48px' }}>
-              <p style={{ fontSize: '17px' }}>Поиск заказов...</p>
+            <div className="no-orders">
+              <p style={{ fontSize: '15px' }}>Поиск заказов...</p>
             </div>
           ) : (
             orders.map(order => (
@@ -191,14 +193,14 @@ function DriverPanel({ user }) {
                 <div className="order-info">
                   <strong>Откуда:</strong> {order.from?.city || order.from_city}
                 </div>
-                <div className="order-info" style={{ marginBottom: '4px' }}>
+                <div className="order-info" style={{ marginBottom: '4px', paddingLeft: '12px' }}>
                   {order.from?.address || order.from_address}
                 </div>
                 
                 <div className="order-info">
                   <strong>Куда:</strong> {order.to?.city || order.to_city}
                 </div>
-                <div className="order-info" style={{ marginBottom: '12px' }}>
+                <div className="order-info" style={{ marginBottom: '12px', paddingLeft: '12px' }}>
                   {order.to?.address || order.to_address}
                 </div>
                 
@@ -206,16 +208,16 @@ function DriverPanel({ user }) {
                   display: 'flex', 
                   gap: '12px', 
                   alignItems: 'center',
-                  padding: '12px',
-                  background: 'rgba(255, 255, 255, 0.03)',
+                  padding: '10px',
+                  background: 'rgba(255, 255, 255, 0.05)',
                   borderRadius: '8px',
-                  marginBottom: '16px'
+                  marginBottom: '12px'
                 }}>
-                  <span style={{ fontSize: '15px', color: 'var(--hint-color)' }}>
+                  <span style={{ fontSize: '14px', color: 'var(--hint-color)' }}>
                     👥 {order.passengersCount || order.passengers_count} пас.
                   </span>
                   {order.luggage && (
-                    <span style={{ fontSize: '15px', color: 'var(--hint-color)' }}>
+                    <span style={{ fontSize: '14px', color: 'var(--hint-color)' }}>
                       🧳 Багаж
                     </span>
                   )}
@@ -225,10 +227,10 @@ function DriverPanel({ user }) {
                   <div className="order-info" style={{ 
                     fontStyle: 'italic', 
                     color: 'var(--hint-color)',
-                    padding: '12px',
-                    background: 'rgba(255, 255, 255, 0.03)',
+                    padding: '10px',
+                    background: 'rgba(255, 255, 255, 0.05)',
                     borderRadius: '8px',
-                    marginBottom: '16px'
+                    marginBottom: '12px'
                   }}>
                     "{order.comment}"
                   </div>

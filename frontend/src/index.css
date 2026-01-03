@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
 * {
   margin: 0;
   padding: 0;
@@ -8,58 +6,45 @@
 }
 
 :root {
-  /* Apple/Tesla Dark Theme */
-  --tg-theme-bg-color: #000000;
-  --tg-theme-secondary-bg-color: #1c1c1d;
-  --tg-theme-text-color: #ffffff;
-  --tg-theme-hint-color: #8e8e93;
-  --tg-theme-link-color: #007aff;
-  --tg-theme-button-color: #007aff;
-  --tg-theme-button-text-color: #ffffff;
-  --tg-theme-header-bg-color: #1c1c1d;
+  /* Telegram Dark Theme Colors - Exact Match */
+  --tg-theme-bg-color: #212121;
+  --tg-theme-secondary-bg-color: #2B2B2B;
+  --tg-theme-text-color: #FFFFFF;
+  --tg-theme-hint-color: #707579;
+  --tg-theme-link-color: #3390EC;
+  --tg-theme-button-color: #3390EC;
+  --tg-theme-button-text-color: #FFFFFF;
   
-  /* Apple Design System Colors */
-  --bg-color: #1c1c1e;
-  --page-bg-color: #000000;
-  --text-color: #ffffff;
-  --hint-color: #8e8e93;
-  --link-color: #007aff;
-  --button-color: #007aff;
-  --button-text-color: #ffffff;
-  --separator-color: rgba(255, 255, 255, 0.1);
+  /* Telegram UI Colors */
+  --bg-color: #2B2B2B;
+  --page-bg-color: #212121;
+  --text-color: #FFFFFF;
+  --hint-color: #707579;
+  --link-color: #3390EC;
+  --button-color: #3390EC;
+  --button-text-color: #FFFFFF;
+  --separator-color: rgba(255, 255, 255, 0.12);
+  --card-bg: #2B2B2B;
   
-  /* Apple/Tesla Typography */
-  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', sans-serif;
-  --font-size-large: 34px;
-  --font-size-title: 28px;
-  --font-size-headline: 22px;
-  --font-size-body: 17px;
-  --font-size-subhead: 15px;
+  /* Typography */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-size-large: 20px;
+  --font-size-title: 20px;
+  --font-size-headline: 17px;
+  --font-size-body: 15px;
+  --font-size-subhead: 14px;
   --font-size-caption: 13px;
   
-  /* Spacing System (Apple 8pt grid) */
+  /* Spacing */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
-  --spacing-xxl: 48px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 20px;
+  --spacing-xxl: 24px;
   
-  /* Border Radius */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    --bg-color: #ffffff;
-    --page-bg-color: #f5f5f7;
-    --text-color: #1d1d1f;
-    --hint-color: #86868b;
-    --separator-color: rgba(0, 0, 0, 0.08);
-  }
+  /* Border Radius - Telegram Style */
+  --radius: 12px;
 }
 
 body {
@@ -67,9 +52,8 @@ body {
   background-color: var(--page-bg-color);
   color: var(--text-color);
   font-size: var(--font-size-body);
-  line-height: 1.47059;
+  line-height: 1.4;
   font-weight: 400;
-  letter-spacing: -0.022em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -84,6 +68,7 @@ button {
   background: none;
   cursor: pointer;
   font-size: inherit;
+  color: inherit;
 }
 
 a {
@@ -95,4 +80,11 @@ input, textarea, select {
   font-family: inherit;
   color: var(--text-color);
   font-size: var(--font-size-body);
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--hint-color);
 }
