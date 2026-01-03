@@ -1,0 +1,314 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import io from 'socket.io-client';
+import { 
+  registerDriver, 
+  getDriver, 
+  setDriverStatus, 
+  getAvailableOrders, 
+  acceptOrder, 
+  rejectOrder 
+} from '../utils/api';
+import { getTelegramUser } from '../utils/telegram';
+import './DriverPanel.css';
+
+const API_URL = process.env.REACT_APP_API_URL?.replace('/api', '') || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3000');
+
+function DriverPanel({ user }) {
+  const navigate = useNavigate();
+  const [driver, setDriver] = useState(null);
+  const [isOnline, setIsOnline] = useState(false);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [registering, setRegistering] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    carModel: '',
+    carNumber: ''
+  });
+  const [socket, setSocket] = useState(null);
+
+  useEffect(() => {
+    const tgUser = getTelegramUser();
+    if (!tgUser) {
+      alert('Ошибка: не удалось получить данные пользователя');
+      navigate('/');
+      return;
+    }
+
+    loadDriverData(tgUser.id.toString());
+  }, []);
+
+  useEffect(() => {
+    if (driver && isOnline) {
+      // Подключаемся к Socket.io
+      const newSocket = io(API_URL);
+      newSocket.emit('driver-online', driver._id);
+      
+      newSocket.on('new-order', (order) => {
+        setOrders(prev => [order, ...prev]);
+      });
+
+      setSocket(newSocket);
+
+      return () => {
+        newSocket.disconnect();
+      };
+    }
+  }, [driver, isOnline]);
+
+  useEffect(() => {
+    if (isOnline && driver) {
+      loadAvailableOrders();
+      const interval = setInterval(loadAvailableOrders, 10000); // Обновляем каждые 10 секунд
+      return () => clearInterval(interval);
+    }
+  }, [isOnline, driver]);
+
+  const loadDriverData = async (telegramId) => {
+    try {
+      const driverData = await getDriver(telegramId);
+      setDriver(driverData);
+      setIsOnline(driverData.isOnline);
+      setFormData({
+        name: driverData.name || '',
+        phone: driverData.phone || '',
+        carModel: driverData.carModel || '',
+        carNumber: driverData.carNumber || ''
+      });
+    } catch (error) {
+      if (error.response?.status === 404) {
+        // Таксист не зарегистрирован
+        const tgUser = getTelegramUser();
+        setFormData({
+          name: `${tgUser.first_name} ${tgUser.last_name || ''}`.trim(),
+          phone: '',
+          carModel: '',
+          carNumber: ''
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadAvailableOrders = async () => {
+    try {
+      const availableOrders = await getAvailableOrders();
+      setOrders(availableOrders);
+    } catch (error) {
+      console.error('Error loading orders:', error);
+    }
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setRegistering(true);
+
+    try {
+      const tgUser = getTelegramUser();
+      const driverData = await registerDriver(
+        tgUser.id.toString(),
+        formData.name,
+        formData.phone,
+        formData.carModel,
+        formData.carNumber
+      );
+      setDriver(driverData);
+      alert('Регистрация успешна!');
+    } catch (error) {
+      console.error('Error registering driver:', error);
+      alert('Ошибка при регистрации: ' + (error.response?.data?.error || error.message));
+    } finally {
+      setRegistering(false);
+    }
+  };
+
+  const handleToggleOnline = async () => {
+    try {
+      const newStatus = !isOnline;
+      await setDriverStatus(driver._id, newStatus);
+      setIsOnline(newStatus);
+    } catch (error) {
+      console.error('Error updating status:', error);
+      alert('Ошибка при изменении статуса');
+    }
+  };
+
+  const handleAcceptOrder = async (orderId) => {
+    try {
+      await acceptOrder(orderId, driver._id);
+      setOrders(prev => prev.filter(order => order._id !== orderId));
+      alert('Заказ принят!');
+      navigate('/my-orders');
+    } catch (error) {
+      console.error('Error accepting order:', error);
+      alert('Ошибка при принятии заказа: ' + (error.response?.data?.error || error.message));
+    }
+  };
+
+  const handleRejectOrder = async (orderId) => {
+    try {
+      await rejectOrder(orderId);
+      setOrders(prev => prev.filter(order => order._id !== orderId));
+    } catch (error) {
+      console.error('Error rejecting order:', error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="container">
+        <p>Загрузка...</p>
+      </div>
+    );
+  }
+
+  if (!driver) {
+    return (
+      <div className="container">
+        <div className="page-header">
+          <h2>Регистрация таксиста</h2>
+          <button className="btn-back" onClick={() => navigate('/')}>← Назад</button>
+        </div>
+
+        <form onSubmit={handleRegister} className="driver-form">
+          <div className="input-group">
+            <label>Имя *</label>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
+            />
+          </div>
+          <div className="input-group">
+            <label>Телефон *</label>
+            <input
+              type="tel"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              required
+              placeholder="+7 (999) 123-45-67"
+            />
+          </div>
+          <div className="input-group">
+            <label>Модель автомобиля *</label>
+            <input
+              type="text"
+              value={formData.carModel}
+              onChange={(e) => setFormData({ ...formData, carModel: e.target.value })}
+              required
+              placeholder="Например: Toyota Camry"
+            />
+          </div>
+          <div className="input-group">
+            <label>Номер автомобиля *</label>
+            <input
+              type="text"
+              value={formData.carNumber}
+              onChange={(e) => setFormData({ ...formData, carNumber: e.target.value })}
+              required
+              placeholder="А123БВ777"
+            />
+          </div>
+          <button type="submit" className="btn" disabled={registering}>
+            {registering ? 'Регистрация...' : 'Зарегистрироваться'}
+          </button>
+        </form>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container">
+      <div className="page-header">
+        <h2>Панель таксиста</h2>
+        <button className="btn-back" onClick={() => navigate('/')}>← Назад</button>
+      </div>
+
+      <div className="driver-info card">
+        <h3>{driver.name}</h3>
+        <p>Автомобиль: {driver.carModel}</p>
+        <p>Номер: {driver.carNumber}</p>
+        <p>Телефон: {driver.phone}</p>
+      </div>
+
+      <div className="status-control">
+        <button
+          className={`btn ${isOnline ? 'btn-online' : 'btn-offline'}`}
+          onClick={handleToggleOnline}
+        >
+          {isOnline ? '🟢 Онлайн' : '🔴 Офлайн'}
+        </button>
+      </div>
+
+      {isOnline && (
+        <div className="orders-section">
+          <h3>Доступные заказы</h3>
+          {orders.length === 0 ? (
+            <p className="no-orders">Нет доступных заказов</p>
+          ) : (
+            orders.map(order => (
+              <div key={order._id} className="order-card">
+                <div className="order-header">
+                  <span className="order-price">{order.price} ₽</span>
+                  <span className={`status-badge status-${order.status}`}>
+                    {order.status === 'pending' ? 'Ожидает' : order.status}
+                  </span>
+                </div>
+                <div className="order-info">
+                  <strong>📍 Откуда:</strong> {order.from.city}, {order.from.address}
+                </div>
+                <div className="order-info">
+                  <strong>📍 Куда:</strong> {order.to.city}, {order.to.address}
+                </div>
+                <div className="order-info">
+                  <strong>📅 Дата:</strong> {new Date(order.date).toLocaleString('ru-RU')}
+                </div>
+                <div className="order-info">
+                  <strong>👥 Пассажиров:</strong> {order.passengersCount}
+                </div>
+                {order.luggage && (
+                  <div className="order-info">🧳 Есть багаж</div>
+                )}
+                <div className="order-info">
+                  <strong>📞 Телефон:</strong> {order.phone}
+                </div>
+                {order.comment && (
+                  <div className="order-info">
+                    <strong>💬 Комментарий:</strong> {order.comment}
+                  </div>
+                )}
+                {order.status === 'pending' && (
+                  <div className="order-actions">
+                    <button
+                      className="btn btn-accept"
+                      onClick={() => handleAcceptOrder(order._id)}
+                    >
+                      ✅ Принять
+                    </button>
+                    <button
+                      className="btn btn-reject"
+                      onClick={() => handleRejectOrder(order._id)}
+                    >
+                      ❌ Отклонить
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      <button className="btn btn-secondary" onClick={() => navigate('/my-orders')}>
+        📋 Мои заказы
+      </button>
+    </div>
+  );
+}
+
+export default DriverPanel;
+

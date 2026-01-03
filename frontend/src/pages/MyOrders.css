@@ -1,0 +1,15 @@
+.no-orders {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.no-orders p {
+  margin-bottom: 20px;
+  color: var(--tg-theme-hint-color, #999999);
+  font-size: 16px;
+}
+
+.orders-list {
+  margin-top: 20px;
+}
+

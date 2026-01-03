@@ -1,0 +1,46 @@
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-header h2 {
+  font-size: 24px;
+  color: var(--tg-theme-text-color, #000000);
+}
+
+.btn-back {
+  background: none;
+  border: none;
+  color: var(--tg-theme-button-color, #3390ec);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.order-form {
+  margin-top: 20px;
+}
+
+.form-section {
+  margin-bottom: 24px;
+}
+
+.form-section h3 {
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: var(--tg-theme-text-color, #000000);
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: auto;
+  margin-right: 8px;
+}
+
