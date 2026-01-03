@@ -13,6 +13,8 @@ const isServerless =
   !!process.env.LAMBDA_TASK_ROOT;
 
 let webhookInitialized = false;
+let webhookNextAttemptAt = 0;
+let webhookEnsuringPromise = null;
 
 if (process.env.TELEGRAM_BOT_TOKEN) {
   // IMPORTANT:
@@ -26,7 +28,10 @@ if (process.env.TELEGRAM_BOT_TOKEN) {
   ensureTelegramWebhook = async () => {
     if (!bot) return;
     if (!isServerless) return;
-    if (webhookInitialized) return;
+    const now = Date.now();
+    if (webhookInitialized && now < webhookNextAttemptAt) return;
+    if (now < webhookNextAttemptAt) return;
+    if (webhookEnsuringPromise) return webhookEnsuringPromise;
 
     const baseUrl =
       (process.env.API_PUBLIC_URL && process.env.API_PUBLIC_URL.replace(/\/$/, '')) ||
@@ -38,13 +43,36 @@ if (process.env.TELEGRAM_BOT_TOKEN) {
     }
 
     const webhookUrl = `${baseUrl}/api/telegram/webhook`;
-    try {
-      await bot.setWebHook(webhookUrl);
-      webhookInitialized = true;
-      console.log('Telegram webhook set:', webhookUrl);
-    } catch (e) {
-      console.error('Failed to set Telegram webhook:', e?.message || e);
-    }
+    webhookEnsuringPromise = (async () => {
+      try {
+        const info = await bot.getWebHookInfo();
+        if (info?.url === webhookUrl) {
+          webhookInitialized = true;
+          // Don't re-check too often
+          webhookNextAttemptAt = Date.now() + 6 * 60 * 60 * 1000; // 6h
+          return;
+        }
+
+        await bot.setWebHook(webhookUrl);
+        webhookInitialized = true;
+        webhookNextAttemptAt = Date.now() + 6 * 60 * 60 * 1000; // 6h
+        console.log('Telegram webhook set:', webhookUrl);
+      } catch (e) {
+        const retryAfter =
+          e?.response?.body?.parameters?.retry_after ||
+          e?.response?.data?.parameters?.retry_after;
+        if (retryAfter) {
+          webhookNextAttemptAt = Date.now() + (retryAfter + 1) * 1000;
+        } else {
+          webhookNextAttemptAt = Date.now() + 60 * 1000; // 1 min backoff
+        }
+        console.error('Failed to set Telegram webhook:', e?.message || e);
+      } finally {
+        webhookEnsuringPromise = null;
+      }
+    })();
+
+    return webhookEnsuringPromise;
   };
 
   // Команда /start
@@ -171,7 +199,8 @@ ${order.comment ? `💬 Комментарий: ${order.comment}` : ''}
 
   processTelegramUpdate = async (update) => {
     if (!bot) return;
-    await ensureTelegramWebhook();
+    // Don't block processing on webhook setup. Best-effort only.
+    ensureTelegramWebhook().catch(() => {});
     bot.processUpdate(update);
   };
 

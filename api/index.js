@@ -24,14 +24,16 @@ app.use('/api/auth', require('../backend/routes/auth'));
 
 // Telegram webhook endpoint (for Vercel serverless)
 app.post('/api/telegram/webhook', async (req, res) => {
+  // Telegram only needs 200 OK quickly
+  res.status(200).json({ ok: true });
+
+  // Process update asynchronously (do not block response)
   try {
-    await ensureTelegramWebhook();
+    ensureTelegramWebhook().catch(() => {});
     await processTelegramUpdate(req.body);
   } catch (e) {
     console.error('Telegram webhook error:', e?.message || e);
   }
-  // Telegram only needs 200 OK quickly
-  res.status(200).json({ ok: true });
 });
 
 // Ensure webhook on cold start / health checks
