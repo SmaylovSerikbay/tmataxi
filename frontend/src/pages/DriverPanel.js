@@ -19,6 +19,18 @@ function DriverPanel({ user }) {
   // eslint-disable-next-line no-unused-vars
   const [socket, setSocket] = useState(null);
 
+  const openMaps = (order) => {
+    const from = `${order.from?.city || order.from_city || ''} ${order.from?.address || order.from_address || ''}`.trim();
+    const to = `${order.to?.city || order.to_city || ''} ${order.to?.address || order.to_address || ''}`.trim();
+    const q = encodeURIComponent(`${from} -> ${to}`.trim());
+    const url = `https://www.google.com/maps/search/?api=1&query=${q}`;
+    if (window.Telegram?.WebApp?.openLink) {
+      window.Telegram.WebApp.openLink(url);
+    } else {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   useEffect(() => {
     const tgUser = getTelegramUser();
     if (!tgUser) {
@@ -205,9 +217,12 @@ function DriverPanel({ user }) {
                       <button className="ds-btn ds-btnSuccess" onClick={() => handleAcceptOrder(order._id || order.id)}>
                         Принять
                       </button>
-                      <button className="ds-btn ds-btnDanger" onClick={() => handleRejectOrder(order._id || order.id)}>
-                        Скрыть
-                      </button>
+                    <button className="ds-btn ds-btnGhost" type="button" onClick={() => openMaps(order)}>
+                      Маршрут
+                    </button>
+                    <button className="ds-btn ds-btnDanger" onClick={() => handleRejectOrder(order._id || order.id)}>
+                      Скрыть
+                    </button>
                     </div>
                   </div>
                 );

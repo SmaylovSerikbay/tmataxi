@@ -4,7 +4,9 @@ import { getTelegramUser } from '../utils/telegram';
 
 function PassengerOrder({ user }) {
   const [loading, setLoading] = useState(false);
+  const [locLoading, setLocLoading] = useState(false);
   const [currency, setCurrency] = useState('KZT'); 
+  const [showComment, setShowComment] = useState(false);
   const [formData, setFormData] = useState({
     fromCity: '',
     fromAddress: '',
@@ -39,6 +41,60 @@ function PassengerOrder({ user }) {
 
   const toggleCurrency = () => {
     setCurrency(prev => prev === 'KZT' ? 'UZS' : 'KZT');
+  };
+
+  const fillFromMyLocation = async () => {
+    if (locLoading) return;
+    if (!navigator.geolocation) {
+      alert('Геолокация не поддерживается на этом устройстве');
+      return;
+    }
+
+    setLocLoading(true);
+    try {
+      const pos = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 8000,
+          maximumAge: 60_000,
+        });
+      });
+
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+
+      // Reverse geocode (no key). If it fails — still allow manual input.
+      const resp = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`,
+        { headers: { 'Accept-Language': 'ru' } }
+      );
+      if (!resp.ok) throw new Error('Не удалось определить адрес');
+      const data = await resp.json();
+      const a = data.address || {};
+
+      const city = a.city || a.town || a.village || a.state || a.county || '';
+      const road = a.road || a.pedestrian || a.footway || a.neighbourhood || '';
+      const house = a.house_number || '';
+      const addr = [road, house].filter(Boolean).join(' ').trim();
+
+      setFormData((p) => ({
+        ...p,
+        fromCity: city || p.fromCity,
+        fromAddress: addr || (data.display_name ? data.display_name.split(',').slice(0, 2).join(', ').trim() : p.fromAddress),
+      }));
+
+      if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Не получилось определить локацию. Введите вручную.');
+      if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+      }
+    } finally {
+      setLocLoading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -114,8 +170,8 @@ function PassengerOrder({ user }) {
 
   return (
     <div>
-      <div className="page-header">
-        <h2>Новый заказ</h2>
+      <div className="page-header page-headerCompact">
+        <h2>Поездка</h2>
         <div className="ds-right">
           <button type="button" className="ds-pill" onClick={toggleCurrency}>
             {currency === 'KZT' ? '₸ KZT' : 'сум UZS'} ⇄
@@ -124,11 +180,19 @@ function PassengerOrder({ user }) {
       </div>
 
       <form onSubmit={handleSubmit} className="order-form">
-        <div className="ds-section">
-          <div className="ds-sectionTitle">Маршрут</div>
-          <div className="ds-card ds-cardFlat">
+        <div className="ds-card ds-cardFlat">
             <div className="ds-field">
-              <div className="ds-fieldLabel">Откуда</div>
+              <div className="ds-inline" style={{ justifyContent: 'space-between' }}>
+                <div className="ds-fieldLabel">Откуда</div>
+                <button
+                  type="button"
+                  className="ds-pill"
+                  onClick={fillFromMyLocation}
+                  disabled={locLoading}
+                >
+                  {locLoading ? 'Определяем…' : 'Моя локация'}
+                </button>
+              </div>
               <input
                 className="ds-fieldInput"
                 type="text"
@@ -169,11 +233,9 @@ function PassengerOrder({ user }) {
                 placeholder="Адрес (улица, дом)"
               />
             </div>
-          </div>
         </div>
 
         <div className="ds-section">
-          <div className="ds-sectionTitle">Детали</div>
           <div className="ds-card ds-cardFlat">
             <div className="ds-row">
               <div className="ds-rowLabel">Дата</div>
@@ -229,7 +291,7 @@ function PassengerOrder({ user }) {
               </div>
             </div>
             <div className="ds-row">
-              <div className="ds-rowLabel">Багажник</div>
+              <div className="ds-rowLabel">Багаж</div>
               <div className="ds-rowValue">
                 <input
                   className="ds-check"
@@ -240,14 +302,8 @@ function PassengerOrder({ user }) {
                 />
               </div>
             </div>
-          </div>
-        </div>
-        
-        <div className="ds-section">
-          <div className="ds-sectionTitle">Цена</div>
-          <div className="ds-card ds-cardFlat">
             <div className="ds-row">
-              <div className="ds-rowLabel">Ваша цена</div>
+              <div className="ds-rowLabel">Цена</div>
               <input
                 className="ds-input"
                 type="number"
@@ -264,17 +320,26 @@ function PassengerOrder({ user }) {
         </div>
 
         <div className="ds-section">
-          <div className="ds-sectionTitle">Комментарий</div>
           <div className="ds-card ds-cardFlat">
-            <div className="ds-row ds-textareaWrap">
-              <textarea
-                className="ds-textarea"
-                name="comment"
-                value={formData.comment}
-                onChange={handleChange}
-                placeholder="Дополнительная информация (необязательно)"
-              />
-            </div>
+            <button
+              type="button"
+              className="ds-row ds-rowBtn"
+              onClick={() => setShowComment((v) => !v)}
+            >
+              <div className="ds-rowLabel">Комментарий</div>
+              <div className="ds-rowValue">{showComment ? 'Скрыть' : 'Добавить'}</div>
+            </button>
+            {showComment && (
+              <div className="ds-row ds-textareaWrap">
+                <textarea
+                  className="ds-textarea"
+                  name="comment"
+                  value={formData.comment}
+                  onChange={handleChange}
+                  placeholder="Дополнительная информация (необязательно)"
+                />
+              </div>
+            )}
           </div>
         </div>
 

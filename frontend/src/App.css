@@ -34,6 +34,16 @@
   margin: 0;
 }
 
+.page-headerCompact {
+  padding: var(--ds-space-3) 0 var(--ds-space-2);
+  margin-bottom: var(--ds-space-3);
+}
+
+.page-headerCompact h2 {
+  font-size: var(--ds-headline);
+  font-weight: 800;
+}
+
 .ds-subtitle {
   margin-top: var(--ds-space-2);
   color: var(--ds-text-2);
