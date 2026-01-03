@@ -64,6 +64,8 @@ if (process.env.TELEGRAM_BOT_TOKEN) {
   // Отправка уведомления таксисту о новом заказе
   notifyDriverAboutNewOrder = function(driverTelegramId, order) {
     if (!bot) return;
+    // Make sure webhook is configured in serverless env (no polling)
+    ensureTelegramWebhook().catch(() => {});
     
     const currency = order.currency || 'KZT';
     const currencyLabel = currency === 'UZS' ? 'сум' : '₸';
@@ -172,6 +174,9 @@ ${order.comment ? `💬 Комментарий: ${order.comment}` : ''}
     await ensureTelegramWebhook();
     bot.processUpdate(update);
   };
+
+  // In serverless, proactively try to set webhook on cold start
+  ensureTelegramWebhook().catch(() => {});
 
   console.log(`Telegram Bot initialized (${isServerless ? 'webhook' : 'polling'})`);
 } else {

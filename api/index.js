@@ -8,6 +8,14 @@ const { processTelegramUpdate, ensureTelegramWebhook } = require('../backend/bot
 app.use(cors());
 app.use(express.json());
 
+// Prevent Vercel/CDN caching for API responses (fixes 304 + stale statuses)
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, max-age=0');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  next();
+});
+
 // Routes - пути должны соответствовать тому, что ожидает frontend (/api/...)
 app.use('/api/orders', require('../backend/routes/orders'));
 app.use('/api/drivers', require('../backend/routes/drivers'));
@@ -25,6 +33,9 @@ app.post('/api/telegram/webhook', async (req, res) => {
   // Telegram only needs 200 OK quickly
   res.status(200).json({ ok: true });
 });
+
+// Ensure webhook on cold start / health checks
+ensureTelegramWebhook().catch(() => {});
 
 // Health check
 app.get('/api/health', (req, res) => {
