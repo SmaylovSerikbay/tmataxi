@@ -184,21 +184,15 @@ function DriverPanel({ user }) {
                       <div className="ds-badge ds-badgeWarn">{timeLabel}</div>
                     </div>
 
-                    <div className="ds-row">
-                      <div className="ds-rowLabel">Откуда</div>
-                      <div className="ds-rowValue">{order.from?.city || order.from_city}</div>
-                    </div>
-                    <div className="ds-row">
-                      <div className="ds-rowLabel">Адрес</div>
-                      <div className="ds-rowValue">{order.from?.address || order.from_address}</div>
-                    </div>
-                    <div className="ds-row">
-                      <div className="ds-rowLabel">Куда</div>
-                      <div className="ds-rowValue">{order.to?.city || order.to_city}</div>
-                    </div>
-                    <div className="ds-row">
-                      <div className="ds-rowLabel">Адрес</div>
-                      <div className="ds-rowValue">{order.to?.address || order.to_address}</div>
+                    <div className="ds-cardPad">
+                      <div className="ds-routeTitle">
+                        {order.from?.city || order.from_city}
+                        <span className="ds-routeArrow">→</span>
+                        {order.to?.city || order.to_city}
+                      </div>
+                      <div className="ds-routeSub">
+                        {(order.from?.address || order.from_address) ?? '—'} • {(order.to?.address || order.to_address) ?? '—'}
+                      </div>
                     </div>
 
                     <div className="ds-mutedBox">

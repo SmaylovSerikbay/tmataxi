@@ -121,6 +121,69 @@
   color: var(--ds-text-3);
 }
 
+/* Field (stacked label + full-width input) — better for addresses/cities */
+.ds-field {
+  padding: var(--ds-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-2);
+}
+
+.ds-field + .ds-field {
+  border-top: 1px solid var(--ds-divider);
+}
+
+.ds-fieldLabel {
+  font-size: var(--ds-caption);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ds-text-3);
+  font-weight: 700;
+}
+
+.ds-fieldInput {
+  width: 100%;
+  padding: 12px 12px;
+  border-radius: var(--ds-radius-md);
+  border: 1px solid var(--ds-border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--ds-text);
+  font-size: var(--ds-body);
+}
+
+.ds-fieldInput::placeholder {
+  color: var(--ds-text-3);
+}
+
+/* Route display helpers */
+.ds-routeTitle {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ds-text);
+}
+
+.ds-routeSub {
+  margin-top: 4px;
+  color: var(--ds-text-2);
+  font-size: var(--ds-caption);
+}
+
+.ds-routeArrow {
+  color: var(--ds-text-3);
+  margin: 0 8px;
+}
+
+.ds-cardPad {
+  padding: var(--ds-space-4);
+}
+
+.ds-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 /* Inputs */
 .ds-input {
   width: 100%;

@@ -127,52 +127,46 @@ function PassengerOrder({ user }) {
         <div className="ds-section">
           <div className="ds-sectionTitle">Маршрут</div>
           <div className="ds-card ds-cardFlat">
-            <div className="ds-row">
-              <div className="ds-rowLabel">Откуда</div>
+            <div className="ds-field">
+              <div className="ds-fieldLabel">Откуда</div>
               <input
-                className="ds-input"
+                className="ds-fieldInput"
                 type="text"
                 name="fromCity"
                 value={formData.fromCity}
                 onChange={handleChange}
                 required
-                placeholder="Город"
+                placeholder="Город отправления"
               />
-            </div>
-            <div className="ds-row">
-              <div className="ds-rowLabel">Адрес</div>
               <input
-                className="ds-input"
+                className="ds-fieldInput"
                 type="text"
                 name="fromAddress"
                 value={formData.fromAddress}
                 onChange={handleChange}
                 required
-                placeholder="Улица, дом"
+                placeholder="Адрес (улица, дом)"
               />
             </div>
-            <div className="ds-row">
-              <div className="ds-rowLabel">Куда</div>
+            <div className="ds-field">
+              <div className="ds-fieldLabel">Куда</div>
               <input
-                className="ds-input"
+                className="ds-fieldInput"
                 type="text"
                 name="toCity"
                 value={formData.toCity}
                 onChange={handleChange}
                 required
-                placeholder="Город"
+                placeholder="Город назначения"
               />
-            </div>
-            <div className="ds-row">
-              <div className="ds-rowLabel">Адрес</div>
               <input
-                className="ds-input"
+                className="ds-fieldInput"
                 type="text"
                 name="toAddress"
                 value={formData.toAddress}
                 onChange={handleChange}
                 required
-                placeholder="Улица, дом"
+                placeholder="Адрес (улица, дом)"
               />
             </div>
           </div>

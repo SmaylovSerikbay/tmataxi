@@ -118,18 +118,12 @@ function MyOrders({ user, userType }) {
                     <div className={`ds-badge ${badgeClass}`}>{getStatusText(order.status)}</div>
                   </div>
 
-                  <div className="ds-row">
-                    <div className="ds-rowLabel">Откуда</div>
-                    <div className="ds-rowValue">
-                      {fromCity}
-                      {fromAddr ? `, ${fromAddr}` : ''}
+                  <div className="ds-cardPad">
+                    <div className="ds-routeTitle">
+                      {fromCity} <span className="ds-routeArrow">→</span> {toCity}
                     </div>
-                  </div>
-                  <div className="ds-row">
-                    <div className="ds-rowLabel">Куда</div>
-                    <div className="ds-rowValue">
-                      {toCity}
-                      {toAddr ? `, ${toAddr}` : ''}
+                    <div className="ds-routeSub">
+                      {fromAddr ? fromAddr : '—'} • {toAddr ? toAddr : '—'}
                     </div>
                   </div>
 
