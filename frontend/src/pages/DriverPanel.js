@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import io from 'socket.io-client';
 import { 
   getDriver, 
@@ -57,14 +57,6 @@ function DriverPanel({ user }) {
     }
   }, [driver, isOnline]);
 
-  useEffect(() => {
-    if (isOnline && driver) {
-      loadAvailableOrders();
-      const interval = setInterval(loadAvailableOrders, 10000);
-      return () => clearInterval(interval);
-    }
-  }, [isOnline, driver]);
-
   const loadDriverData = async (telegramId) => {
     try {
       const driverData = await getDriver(telegramId);
@@ -77,7 +69,7 @@ function DriverPanel({ user }) {
     }
   };
 
-  const loadAvailableOrders = async () => {
+  const loadAvailableOrders = useCallback(async () => {
     try {
       const driverId = driver?.id || driver?._id;
       const availableOrders = await getAvailableOrders(driverId);
@@ -85,7 +77,15 @@ function DriverPanel({ user }) {
     } catch (error) {
       console.error('Error loading orders:', error);
     }
-  };
+  }, [driver]);
+
+  useEffect(() => {
+    if (isOnline && driver) {
+      loadAvailableOrders();
+      const interval = setInterval(loadAvailableOrders, 10000);
+      return () => clearInterval(interval);
+    }
+  }, [isOnline, driver, loadAvailableOrders]);
 
   const handleToggleOnline = async () => {
     try {
