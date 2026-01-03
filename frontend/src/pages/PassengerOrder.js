@@ -12,8 +12,8 @@ function PassengerOrder({ user }) {
     fromAddress: '',
     toCity: '',
     toAddress: '',
-    date: '',
-    time: '',
+    date: new Date().toISOString().split('T')[0],
+    time: '12:00',
     passengersCount: 1,
     luggage: false,
     phone: '',
@@ -23,6 +23,25 @@ function PassengerOrder({ user }) {
 
   useEffect(() => {
     const tgUser = getTelegramUser();
+    if (tgUser && window.Telegram?.WebApp) {
+      const tg = window.Telegram.WebApp;
+      tg.MainButton.text = "Создать заказ";
+      tg.MainButton.show();
+      
+      tg.MainButton.onClick(() => {
+         // We can't easily trigger form submit from outside, 
+         // so we rely on the in-form button for now or use a ref.
+         // Better to hide MainButton if we use in-app button, OR attach handler.
+         // For now, let's just use our custom button to be safe and consistent.
+         tg.MainButton.hide();
+      });
+
+      if (tg.initDataUnsafe?.user?.phone_number) {
+        setFormData(prev => ({ ...prev, phone: tg.initDataUnsafe.user.phone_number }));
+      }
+    }
+    
+    // Auto-register check
     if (tgUser) {
       const autoRegister = async () => {
         try {
@@ -32,17 +51,10 @@ function PassengerOrder({ user }) {
             tgUser.phone_number || ''
           );
         } catch (error) {
-          console.error('Auto-register error:', error);
+           // Ignore errors here, will handle on submit
         }
       };
       autoRegister();
-      
-      if (window.Telegram?.WebApp) {
-        const tg = window.Telegram.WebApp;
-        if (tg.initDataUnsafe?.user?.phone_number) {
-          setFormData(prev => ({ ...prev, phone: tg.initDataUnsafe.user.phone_number }));
-        }
-      }
     }
   }, []);
 
@@ -65,22 +77,13 @@ function PassengerOrder({ user }) {
     try {
       const tgUser = getTelegramUser();
       if (!tgUser) {
-        alert('Ошибка: не удалось получить данные пользователя');
+        alert('Ошибка: Запустите приложение через Telegram');
         return;
       }
 
-      // If phone is empty, try to use Telegram User ID as a fallback identifier or just empty string 
-      // if backend allows (but backend model requires phone).
-      // Since user said "contacts are illogical", we can assume they expect to be contacted via Telegram.
-      // We will fill phone with "Telegram" if empty, to bypass backend validation if it's just a string check.
-      // But ideally we should ask for it if missing. For now, let's keep it but make it optional in UI if we have it?
-      // No, let's just use what we have. If empty, maybe alert?
-      // User said "why contacts... illogical". I'll default phone to "Telegram" if not provided?
-      // No, that might break SMS notifications if any.
-      // Let's use a hidden default or the Telegram handle.
-      
       const phoneToSubmit = formData.phone || `@${tgUser.username}` || 'No Phone';
 
+      // 1. Ensure passenger exists
       const passenger = await registerPassenger(
         tgUser.id.toString(),
         `${tgUser.first_name} ${tgUser.last_name || ''}`.trim(),
@@ -89,6 +92,7 @@ function PassengerOrder({ user }) {
 
       localStorage.setItem('passengerId', passenger.id || passenger._id);
 
+      // 2. Create Order
       const orderDate = new Date(`${formData.date}T${formData.time}`);
       await createOrder({
         passengerId: passenger.id || passenger._id,
@@ -106,16 +110,20 @@ function PassengerOrder({ user }) {
         phone: phoneToSubmit,
         comment: formData.comment,
         price: parseFloat(formData.price),
-        currency: currency // We might need to send currency to backend if it supports it, 
-                          // but existing model doesn't have it. We'll just append to comment or ignore for now?
-                          // Or assume price is just a number and UI handles display.
+        currency: currency
       });
 
-      alert('Заказ создан успешно!');
+      // 3. Success feedback
+      if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+      }
       navigate('/my-orders');
     } catch (error) {
       console.error('Error creating order:', error);
-      alert('Ошибка при создании заказа: ' + (error.response?.data?.error || error.message));
+      if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+      }
+      alert('Ошибка: ' + (error.response?.data?.error || error.message));
     } finally {
       setLoading(false);
     }
@@ -133,16 +141,16 @@ function PassengerOrder({ user }) {
 
       <form onSubmit={handleSubmit} className="order-form">
         <div className="form-section">
-          <h3>Откуда</h3>
+          <h3>Маршрут</h3>
           <div className="input-group">
-            <label>Город</label>
+            <label>Откуда</label>
             <input
               type="text"
               name="fromCity"
               value={formData.fromCity}
               onChange={handleChange}
               required
-              placeholder="Москва"
+              placeholder="Город"
             />
           </div>
           <div className="input-group">
@@ -156,19 +164,18 @@ function PassengerOrder({ user }) {
               placeholder="Улица, дом"
             />
           </div>
-        </div>
-
-        <div className="form-section">
-          <h3>Куда</h3>
+          
+          {/* Separator / Arrow visual could go here */}
+          
           <div className="input-group">
-            <label>Город</label>
+            <label>Куда</label>
             <input
               type="text"
               name="toCity"
               value={formData.toCity}
               onChange={handleChange}
               required
-              placeholder="Санкт-Петербург"
+              placeholder="Город"
             />
           </div>
           <div className="input-group">
@@ -185,7 +192,7 @@ function PassengerOrder({ user }) {
         </div>
 
         <div className="form-section">
-          <h3>Детали</h3>
+          <h3>Детали поездки</h3>
           <div className="input-group">
             <label>Дата</label>
             <input
@@ -207,27 +214,36 @@ function PassengerOrder({ user }) {
               required
             />
           </div>
+          
           <div className="input-group">
             <label>Пассажиров</label>
-            <input
-              type="number"
-              name="passengersCount"
-              value={formData.passengersCount}
-              onChange={handleChange}
-              required
-              min="1"
-              max="8"
-            />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <button type="button" onClick={() => setFormData(p => ({...p, passengersCount: Math.max(1, p.passengersCount - 1)}))} style={{ fontSize: '20px', padding: '0 10px', color: 'var(--link-color)' }}>−</button>
+                <span style={{ fontSize: '17px', minWidth: '20px', textAlign: 'center' }}>{formData.passengersCount}</span>
+                <button type="button" onClick={() => setFormData(p => ({...p, passengersCount: Math.min(8, p.passengersCount + 1)}))} style={{ fontSize: '20px', padding: '0 10px', color: 'var(--link-color)' }}>+</button>
+            </div>
           </div>
-          
-          {/* Currency Toggle */}
-          <button type="button" className="btn" onClick={toggleCurrency} style={{ justifyContent: 'space-between' }}>
-            <span>Валюта</span>
-            <span style={{ color: 'var(--link-color)' }}>{currency === 'KZT' ? 'Тенге (₸)' : 'Сум (UZS)'}</span>
-          </button>
 
-          <div className="input-group">
-            <label>Цена, {currencySymbol}</label>
+          <div className="checkbox-group">
+            <input
+              type="checkbox"
+              name="luggage"
+              checked={formData.luggage}
+              onChange={handleChange}
+            />
+            <label style={{ width: 'auto' }}>Нужен багажник</label>
+          </div>
+        </div>
+        
+        <div className="form-section">
+           <h3>Стоимость</h3>
+           <div className="input-group">
+            <button type="button" onClick={toggleCurrency} style={{ textAlign: 'left', padding: 0, color: 'var(--link-color)', fontSize: '16px' }}>
+              {currency === 'KZT' ? 'Валюта: Тенге (₸)' : 'Валюта: Сум (UZS)'}
+            </button>
+           </div>
+           <div className="input-group">
+            <label>Предложите цену</label>
             <input
               type="number"
               name="price"
@@ -236,50 +252,28 @@ function PassengerOrder({ user }) {
               required
               min="0"
               step="100"
-              placeholder="0"
+              placeholder={`0 ${currencySymbol}`}
+              style={{ fontWeight: '600', color: '#34C759' }}
             />
-          </div>
-          <div className="checkbox-group">
-            <input
-              type="checkbox"
-              name="luggage"
-              checked={formData.luggage}
-              onChange={handleChange}
-            />
-            <label style={{ width: 'auto' }}>Есть багаж</label>
           </div>
         </div>
 
-        {/* Removed redundant Contacts section if possible, merging Comment into Details */}
         <div className="form-section">
-          <h3>Дополнительно</h3>
           <div className="input-group textarea-group">
-            <label>Комментарий</label>
             <textarea
               name="comment"
               value={formData.comment}
               onChange={handleChange}
-              placeholder="Детали заказа..."
+              placeholder="Комментарий к заказу (необязательно)"
+              style={{ minHeight: '60px' }}
             />
           </div>
-          {/* Hidden phone input to satisfy backend requirement if needed, or we rely on auto-fill */}
-          {!formData.phone && (
-             <div className="input-group">
-               <label>Телефон</label>
-               <input
-                 type="tel"
-                 name="phone"
-                 value={formData.phone}
-                 onChange={handleChange}
-                 placeholder="Для связи (необязательно)"
-               />
-             </div>
-          )}
         </div>
 
         <button type="submit" className="btn btn-primary" disabled={loading}>
           {loading ? 'Создание...' : 'Создать заказ'}
         </button>
+        <div style={{ height: '20px' }}></div>
       </form>
     </div>
   );
