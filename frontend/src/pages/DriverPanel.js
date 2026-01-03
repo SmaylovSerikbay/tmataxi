@@ -10,7 +10,6 @@ import {
   rejectOrder 
 } from '../utils/api';
 import { getTelegramUser } from '../utils/telegram';
-import './DriverPanel.css';
 
 const API_URL = process.env.REACT_APP_API_URL?.replace('/api', '') || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3000');
 
@@ -167,7 +166,7 @@ function DriverPanel({ user }) {
 
   if (loading) {
     return (
-      <div className="container">
+      <div className="container" style={{ padding: '20px', textAlign: 'center', color: 'var(--hint-color)' }}>
         <p>Загрузка...</p>
       </div>
     );
@@ -182,7 +181,7 @@ function DriverPanel({ user }) {
           <div style={{ width: '60px' }}></div>
         </div>
 
-        <form onSubmit={handleRegister} className="driver-form">
+        <form onSubmit={handleRegister} className="form-section">
           <div className="input-group">
             <label>Модель</label>
             <input
@@ -205,7 +204,7 @@ function DriverPanel({ user }) {
               maxLength="9"
             />
           </div>
-          <button type="submit" className="btn" disabled={registering} style={{ marginTop: '8px' }}>
+          <button type="submit" className="btn btn-primary" disabled={registering}>
             {registering ? 'Сохранение...' : 'Сохранить'}
           </button>
         </form>
@@ -221,24 +220,29 @@ function DriverPanel({ user }) {
         <div style={{ width: '60px' }}></div>
       </div>
 
-      <div className="driver-info card">
-        <h3>{driver.name || driver.name}</h3>
-        <p>{driver.carModel || driver.car_model} • {driver.carNumber || driver.car_number}</p>
-        <p>{driver.phone}</p>
+      <div className="form-section">
+        <h3>Водитель</h3>
+        <div className="menu-item" style={{ flexDirection: 'column', alignItems: 'flex-start', padding: '12px 16px' }}>
+          <div style={{ fontWeight: 600, fontSize: '17px', color: 'var(--text-color)' }}>{driver.name || driver.name}</div>
+          <div style={{ color: 'var(--hint-color)', fontSize: '13px', marginTop: '4px' }}>{driver.carModel || driver.car_model} • {driver.carNumber || driver.car_number}</div>
+          <div style={{ color: 'var(--hint-color)', fontSize: '13px' }}>{driver.phone}</div>
+        </div>
       </div>
 
-      <div className="status-control">
+      <div className="form-section">
+        <h3>Статус</h3>
         <button
           className={`btn ${isOnline ? 'btn-online' : 'btn-offline'}`}
           onClick={handleToggleOnline}
+          style={{ justifyContent: 'center' }}
         >
-          {isOnline ? 'Онлайн' : 'Офлайн'}
+          {isOnline ? '🟢 Вы онлайн' : '🔴 Вы офлайн'}
         </button>
       </div>
 
       {isOnline && (
-        <div className="orders-section">
-          <h3>Доступные заказы</h3>
+        <div className="orders-list">
+          <div className="section-header">Доступные заказы</div>
           {orders.length === 0 ? (
             <div className="no-orders">
               <p>Нет доступных заказов</p>
@@ -267,9 +271,6 @@ function DriverPanel({ user }) {
                 {order.luggage && (
                   <div className="order-info">Есть багаж</div>
                 )}
-                <div className="order-info">
-                  <strong>Телефон:</strong> {order.phone}
-                </div>
                 {order.comment && (
                   <div className="order-info">
                     <strong>Комментарий:</strong> {order.comment}
@@ -297,12 +298,13 @@ function DriverPanel({ user }) {
         </div>
       )}
 
-      <button className="btn btn-secondary" onClick={() => navigate('/my-orders')} style={{ marginTop: '8px' }}>
-        Мои заказы
-      </button>
+      <div className="form-section">
+        <button className="btn" onClick={() => navigate('/my-orders')}>
+          Мои заказы
+        </button>
+      </div>
     </div>
   );
 }
 
 export default DriverPanel;
-

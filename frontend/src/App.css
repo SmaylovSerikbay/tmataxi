@@ -1,241 +1,265 @@
 .App {
-  min-height: 100vh;
-  background: var(--bg);
-  color: var(--text);
-}
-
-.container {
-  max-width: 100%;
+  max-width: 600px;
   margin: 0 auto;
-  padding: 0;
+  min-height: 100vh;
+  background-color: var(--secondary-bg-color);
+  padding-bottom: 20px;
 }
 
-/* Кнопки в стиле BotFather */
-.btn {
-  width: 100%;
-  padding: 12px 16px;
-  font-size: 17px;
+/* List Group Style (Telegram Sections) */
+.form-section, .orders-list, .menu-list {
+  background-color: var(--bg-color);
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.form-section h3, .section-header {
+  margin: 0;
+  padding: 6px 16px;
+  font-size: 13px;
+  text-transform: uppercase;
+  color: var(--hint-color);
+  background-color: var(--secondary-bg-color);
   font-weight: 400;
-  border: none;
-  border-radius: 0;
-  cursor: pointer;
-  transition: var(--transition);
-  background: var(--bg);
-  color: var(--primary);
-  text-align: left;
-  border-bottom: 1px solid var(--border);
-  margin: 0;
+  letter-spacing: -0.1px;
+}
+
+/* List Items / Cells */
+.input-group, .btn, .order-card, .menu-item {
   position: relative;
+  background-color: var(--bg-color);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  min-height: 48px;
 }
 
-.btn:first-of-type {
-  border-top: 1px solid var(--border);
+/* Separators */
+.input-group:not(:last-child)::after,
+.btn:not(:last-child)::after,
+.order-card:not(:last-child)::after,
+.menu-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 16px;
+  right: 0;
+  bottom: 0;
+  height: 0.5px; /* Hairline */
+  background-color: var(--separator-color);
 }
 
-.btn:active {
-  background: var(--bg-secondary);
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.btn-secondary {
-  background: var(--bg-secondary);
-  color: var(--text);
-  border: none;
-  border-bottom: 1px solid var(--border);
-  margin-top: 8px;
-  border-top: 1px solid var(--border);
-}
-
-.btn-secondary:active {
-  background: #E5E5EA;
-}
-
-/* Карточки */
-.card {
-  background: var(--bg);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  padding: 12px 16px;
-  margin: 0;
-}
-
-/* Формы */
+/* Inputs within Cells */
 .input-group {
-  margin: 0;
-  border-bottom: 1px solid var(--border);
-  padding: 12px 16px;
-  background: var(--bg);
-}
-
-.input-group:first-child {
-  border-top: 1px solid var(--border);
+  flex-direction: column;
+  align-items: flex-start;
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 
 .input-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 400;
-  font-size: 15px;
-  color: var(--text-secondary);
+  font-size: 12px;
+  color: var(--link-color); /* Apple style label */
+  margin-bottom: 2px;
+  width: 100%;
 }
 
-.input-group input,
+.input-group input, 
 .input-group select,
 .input-group textarea {
   width: 100%;
-  padding: 0;
   border: none;
-  border-radius: 0;
-  font-size: 17px;
   background: transparent;
-  color: var(--text);
-  transition: var(--transition);
-  font-family: inherit;
-}
-
-.input-group input:focus,
-.input-group select:focus,
-.input-group textarea:focus {
+  font-size: 17px;
+  padding: 4px 0;
   outline: none;
 }
 
-.input-group input::placeholder,
-.input-group textarea::placeholder {
-  color: var(--text-secondary);
-}
-
 .input-group textarea {
-  resize: vertical;
-  min-height: 80px;
-  line-height: 1.47;
+  resize: none;
+  min-height: 60px;
 }
 
-/* Карточки заказов */
-.order-card {
-  background: var(--bg);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  padding: 12px 16px;
-  margin: 0;
-}
-
-.order-card h3 {
-  margin-bottom: 8px;
-  color: var(--text);
+/* Buttons as List Items */
+.btn {
+  width: 100%;
+  text-align: left;
+  color: var(--link-color);
   font-size: 17px;
-  font-weight: 400;
+  justify-content: flex-start;
+  border-radius: 0;
+}
+
+.btn:active {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.btn-primary {
+  /* If we need a main button style */
+  background-color: var(--bg-color);
+  color: var(--link-color);
+  justify-content: center;
+  font-weight: 600;
+}
+
+.btn-danger {
+  color: #ff3b30;
+}
+
+.btn-secondary {
+  color: var(--text-color);
+}
+
+.btn-online {
+  color: #34C759;
+}
+
+.btn-offline {
+  color: #FF3B30;
+}
+
+/* Back Button */
+.btn-back {
+  padding: 12px 16px;
+  color: var(--link-color);
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  background: transparent;
+}
+
+/* Page Header */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--bg-color);
+  padding: 0;
+  height: 52px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 0.5px 0 var(--separator-color);
+}
+
+.page-header h2 {
+  font-size: 17px;
+  font-weight: 600;
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+
+/* Home Page Specific */
+.home-header {
+  padding: 40px 16px 20px;
+  text-align: center;
+}
+
+.home-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.home-buttons {
+  background-color: var(--bg-color);
+  margin-top: 20px;
+}
+
+/* Orders List */
+.order-card {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px 16px;
+  gap: 4px;
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.order-price {
+  font-weight: 600;
+  color: var(--link-color);
 }
 
 .order-info {
-  margin-bottom: 6px;
-  color: var(--text-secondary);
   font-size: 15px;
-  line-height: 1.47;
+  color: var(--text-color);
 }
 
 .order-info strong {
-  color: var(--text);
+  color: var(--hint-color);
   font-weight: 400;
+  margin-right: 4px;
 }
 
-/* Статус бейджи */
 .status-badge {
-  display: inline-block;
-  padding: 2px 8px;
+  font-size: 12px;
+  padding: 2px 6px;
   border-radius: 4px;
-  font-size: 13px;
-  font-weight: 400;
-  margin-top: 8px;
+  background-color: var(--secondary-bg-color);
+  color: var(--hint-color);
 }
 
-.status-pending {
-  background: var(--warning);
-  color: #FFFFFF;
-}
-
-.status-accepted {
-  background: var(--success);
-  color: #FFFFFF;
-}
-
-.status-rejected {
-  background: var(--danger);
-  color: #FFFFFF;
-}
-
-.status-in-progress {
-  background: var(--primary);
-  color: #FFFFFF;
-}
-
-.status-completed {
-  background: var(--text-secondary);
-  color: #FFFFFF;
-}
-
-.btn-back {
-  background: none;
-  border: none;
-  color: var(--primary);
-  font-size: 17px;
-  font-weight: 400;
-  cursor: pointer;
-  padding: 12px 16px;
-  transition: var(--transition);
+/* Order Actions */
+.order-actions {
+  display: flex;
   width: 100%;
-  text-align: left;
-  border-bottom: 1px solid var(--border);
-}
-
-.btn-back:active {
-  background: var(--bg-secondary);
-}
-
-/* Секции форм */
-.form-section {
-  margin: 0;
-  background: var(--bg);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  padding: 0;
   margin-top: 8px;
+  border-top: 0.5px solid var(--separator-color);
 }
 
-.form-section h3 {
-  font-size: 13px;
-  font-weight: 400;
-  margin: 0;
-  color: var(--text-secondary);
-  letter-spacing: -0.01em;
-  padding: 8px 16px;
-  text-transform: uppercase;
-  background: var(--bg-secondary);
+.order-actions .btn {
+  flex: 1;
+  justify-content: center;
+  border-bottom: none;
 }
 
+.order-actions .btn:first-child {
+  border-right: 0.5px solid var(--separator-color);
+}
+
+.btn-accept {
+  color: #34C759;
+}
+
+.btn-reject {
+  color: #FF3B30;
+}
+
+/* Checkbox */
 .checkbox-group {
+  background-color: var(--bg-color);
   padding: 12px 16px;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg);
+  display: flex;
+  align-items: center;
 }
 
 .checkbox-group label {
   display: flex;
   align-items: center;
-  cursor: pointer;
-  font-size: 17px;
-  color: var(--text);
+  width: 100%;
   gap: 12px;
-  margin: 0;
+  font-size: 17px;
 }
 
 .checkbox-group input[type="checkbox"] {
-  width: 24px;
-  height: 24px;
-  margin: 0;
-  cursor: pointer;
-  accent-color: var(--primary);
+  width: 22px;
+  height: 22px;
+  accent-color: var(--button-color);
+}
+
+/* No Orders */
+.no-orders {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--hint-color);
+}
+
+.no-orders p {
+  margin-bottom: 16px;
 }

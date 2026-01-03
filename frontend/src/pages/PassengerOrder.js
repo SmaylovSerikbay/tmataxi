@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createOrder, registerPassenger } from '../utils/api';
 import { getTelegramUser } from '../utils/telegram';
-import './PassengerOrder.css';
 
 function PassengerOrder({ user }) {
   const navigate = useNavigate();
@@ -253,9 +252,11 @@ function PassengerOrder({ user }) {
           </div>
         </div>
 
-        <button type="submit" className="btn" disabled={loading} style={{ marginTop: '8px' }}>
-          {loading ? 'Создание...' : 'Создать заказ'}
-        </button>
+        <div className="form-section">
+          <button type="submit" className="btn btn-primary" disabled={loading}>
+            {loading ? 'Создание...' : 'Создать заказ'}
+          </button>
+        </div>
       </form>
     </div>
   );

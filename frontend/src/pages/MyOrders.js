@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getPassengerOrders, getDriverOrders, getDriver } from '../utils/api';
 import { getTelegramUser } from '../utils/telegram';
-import './MyOrders.css';
 
 function MyOrders({ user, userType }) {
   const navigate = useNavigate();
@@ -35,10 +34,7 @@ function MyOrders({ user, userType }) {
         }
       } else {
         // Для пассажира нужно получить passengerId из localStorage или API
-        // Пока используем временное решение - получаем все заказы и фильтруем
-        // В реальном приложении нужно сохранять passengerId после регистрации
         try {
-          // Пытаемся получить passengerId из localStorage
           const passengerId = localStorage.getItem('passengerId');
           if (passengerId) {
             ordersData = await getPassengerOrders(passengerId);
@@ -58,12 +54,8 @@ function MyOrders({ user, userType }) {
 
   if (loading) {
     return (
-      <div>
-        <div className="page-header">
-          <div style={{ width: '60px' }}></div>
-          <h2>Загрузка...</h2>
-          <div style={{ width: '60px' }}></div>
-        </div>
+      <div className="container" style={{ padding: '20px', textAlign: 'center', color: 'var(--hint-color)' }}>
+        <p>Загрузка...</p>
       </div>
     );
   }
@@ -78,10 +70,12 @@ function MyOrders({ user, userType }) {
 
       {orders.length === 0 ? (
         <div className="no-orders">
-          <p>Нет заказов</p>
-          <button className="btn" onClick={() => navigate(userType === 'driver' ? '/driver' : '/order')} style={{ marginTop: '8px' }}>
-            {userType === 'driver' ? 'Панель таксиста' : 'Создать заказ'}
-          </button>
+          <p>У вас пока нет активных заказов</p>
+          <div className="form-section">
+            <button className="btn btn-primary" onClick={() => navigate(userType === 'driver' ? '/driver' : '/order')}>
+              {userType === 'driver' ? 'Перейти в панель таксиста' : 'Создать новый заказ'}
+            </button>
+          </div>
         </div>
       ) : (
         <div className="orders-list">
@@ -121,4 +115,3 @@ function MyOrders({ user, userType }) {
 }
 
 export default MyOrders;
-

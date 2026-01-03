@@ -18,22 +18,25 @@ function Home({ user, userType, setUserType }) {
   return (
     <div>
       <div className="home-header">
-        <h1>Междугороднее такси</h1>
+        <h1>🚕 TMATAXI</h1>
+        <p style={{ color: 'var(--hint-color)' }}>Выберите режим работы</p>
       </div>
 
-      <div className="home-buttons">
-        <button className="btn btn-passenger" onClick={handlePassengerClick}>
-          Я пассажир
+      <div className="form-section">
+        <h3>Меню</h3>
+        <button className="btn" onClick={handlePassengerClick}>
+          👤 Я пассажир
         </button>
-        <button className="btn btn-driver" onClick={handleDriverClick}>
-          Я таксист
+        <button className="btn" onClick={handleDriverClick}>
+          🚖 Я таксист
         </button>
       </div>
 
       {user && (
-        <div className="home-actions">
-          <button className="btn btn-secondary" onClick={() => navigate('/my-orders')}>
-            Мои заказы
+        <div className="form-section">
+          <h3>Личный кабинет</h3>
+          <button className="btn" onClick={() => navigate('/my-orders')}>
+            📦 Мои заказы
           </button>
         </div>
       )}
