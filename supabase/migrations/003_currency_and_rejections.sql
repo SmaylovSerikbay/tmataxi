@@ -18,6 +18,7 @@ BEGIN
   END IF;
 END $$;
 
+
 -- 2) Order rejections table (hide order for a specific driver)
 CREATE TABLE IF NOT EXISTS order_rejections (
   order_id UUID REFERENCES orders(id) ON DELETE CASCADE,
