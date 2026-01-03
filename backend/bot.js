@@ -201,6 +201,13 @@ ${order.comment ? `💬 Комментарий: ${order.comment}` : ''}
     if (!bot) return;
     // Don't block processing on webhook setup. Best-effort only.
     ensureTelegramWebhook().catch(() => {});
+    try {
+      if (update?.callback_query?.data) {
+        console.log('TG callback_query:', update.callback_query.data);
+      } else if (update?.message?.text) {
+        console.log('TG message:', update.message.text);
+      }
+    } catch (e) {}
     bot.processUpdate(update);
   };
 
