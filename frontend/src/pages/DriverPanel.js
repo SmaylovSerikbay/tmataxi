@@ -68,7 +68,6 @@ function DriverPanel({ user }) {
   const loadAvailableOrders = async () => {
     try {
       const availableOrders = await getAvailableOrders();
-      // Filter out orders already accepted by others if API doesn't do it
       setOrders(availableOrders);
     } catch (error) {
       console.error('Error loading orders:', error);
@@ -80,6 +79,9 @@ function DriverPanel({ user }) {
       const newStatus = !isOnline;
       await setDriverStatus(driver.id || driver._id, newStatus);
       setIsOnline(newStatus);
+      if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+      }
     } catch (error) {
       console.error('Error updating status:', error);
       alert('Ошибка при изменении статуса');
@@ -92,6 +94,7 @@ function DriverPanel({ user }) {
       setOrders(prev => prev.filter(order => order._id !== orderId));
       if (window.Telegram?.WebApp) {
          window.Telegram.WebApp.showAlert('Заказ принят! Перейдите в "Заказы" для деталей.');
+         window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
       } else {
          alert('Заказ принят!');
       }
@@ -110,13 +113,28 @@ function DriverPanel({ user }) {
     }
   };
 
-  if (loading) return <div className="container"><p style={{textAlign:'center', marginTop:20}}>Загрузка...</p></div>;
+  if (loading) {
+    return (
+      <div style={{ padding: '48px 20px', textAlign: 'center', color: 'var(--hint-color)' }}>
+        <p style={{ fontSize: '17px', fontWeight: '400' }}>Загрузка...</p>
+      </div>
+    );
+  }
 
   if (!driver) {
     return (
-      <div style={{ padding: 20, textAlign: 'center' }}>
-        <h3>Вы не зарегистрированы как водитель</h3>
-        <p>Перейдите в профиль, чтобы зарегистрироваться.</p>
+      <div>
+        <div className="page-header">
+          <h2>Лента заказов</h2>
+        </div>
+        <div style={{ padding: '48px 20px', textAlign: 'center' }}>
+          <p style={{ fontSize: '17px', color: 'var(--hint-color)', marginBottom: '16px' }}>
+            Вы не зарегистрированы как водитель
+          </p>
+          <p style={{ fontSize: '15px', color: 'var(--hint-color)' }}>
+            Перейдите в профиль, чтобы зарегистрироваться
+          </p>
+        </div>
       </div>
     );
   }
@@ -125,73 +143,110 @@ function DriverPanel({ user }) {
     <div>
       <div className="page-header">
         <h2>Лента заказов</h2>
-        <div style={{ marginLeft: 'auto' }}>
-            <button
-            className={`btn ${isOnline ? 'btn-online' : 'btn-offline'}`}
-            onClick={handleToggleOnline}
-            style={{ 
-                padding: '4px 12px', 
-                fontSize: '12px', 
-                height: 'auto', 
-                minHeight: '30px',
-                width: 'auto',
-                borderRadius: '15px'
-            }}
-            >
-            {isOnline ? '🟢 Онлайн' : '🔴 Офлайн'}
-            </button>
-        </div>
+        <button
+          className={`btn ${isOnline ? 'btn-online' : 'btn-offline'}`}
+          onClick={handleToggleOnline}
+          style={{ 
+            padding: '8px 16px', 
+            fontSize: '15px', 
+            height: 'auto', 
+            minHeight: '36px',
+            width: 'auto',
+            borderRadius: '18px',
+            fontWeight: '600',
+            margin: 0
+          }}
+        >
+          {isOnline ? '🟢 Онлайн' : '🔴 Офлайн'}
+        </button>
       </div>
 
       {!isOnline && (
-        <div className="no-orders" style={{ marginTop: 40 }}>
-           <p>Вы офлайн. Включите статус "Онлайн", чтобы видеть заказы.</p>
+        <div className="no-orders" style={{ marginTop: '48px' }}>
+          <p style={{ fontSize: '17px', marginBottom: '8px' }}>Вы офлайн</p>
+          <p style={{ fontSize: '15px', color: 'var(--hint-color)' }}>
+            Включите статус "Онлайн", чтобы видеть заказы
+          </p>
         </div>
       )}
 
       {isOnline && (
         <div className="orders-list">
           {orders.length === 0 ? (
-            <div className="no-orders" style={{ marginTop: 40 }}>
-              <p>Поиск заказов...</p>
+            <div className="no-orders" style={{ marginTop: '48px' }}>
+              <p style={{ fontSize: '17px' }}>Поиск заказов...</p>
             </div>
           ) : (
             orders.map(order => (
               <div key={order._id || order.id} className="order-card">
                 <div className="order-header">
-                  <span className="order-price">{order.price} {order.currency || '₸'}</span>
-                  <span className="status-badge">
-                     {new Date(order.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                  <span className="order-price">
+                    {order.price} {order.currency === 'UZS' ? 'сум' : '₸'}
+                  </span>
+                  <span className="status-badge status-pending">
+                    {new Date(order.date).toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'})}
                   </span>
                 </div>
+                
                 <div className="order-info">
                   <strong>Откуда:</strong> {order.from?.city || order.from_city}
                 </div>
+                <div className="order-info" style={{ marginBottom: '4px' }}>
+                  {order.from?.address || order.from_address}
+                </div>
+                
                 <div className="order-info">
                   <strong>Куда:</strong> {order.to?.city || order.to_city}
                 </div>
-                <div className="order-info">
-                   {order.passengersCount} пас. {order.luggage ? '• 🧳 Багаж' : ''}
+                <div className="order-info" style={{ marginBottom: '12px' }}>
+                  {order.to?.address || order.to_address}
                 </div>
+                
+                <div style={{ 
+                  display: 'flex', 
+                  gap: '12px', 
+                  alignItems: 'center',
+                  padding: '12px',
+                  background: 'rgba(255, 255, 255, 0.03)',
+                  borderRadius: '8px',
+                  marginBottom: '16px'
+                }}>
+                  <span style={{ fontSize: '15px', color: 'var(--hint-color)' }}>
+                    👥 {order.passengersCount || order.passengers_count} пас.
+                  </span>
+                  {order.luggage && (
+                    <span style={{ fontSize: '15px', color: 'var(--hint-color)' }}>
+                      🧳 Багаж
+                    </span>
+                  )}
+                </div>
+                
                 {order.comment && (
-                  <div className="order-info" style={{ fontStyle: 'italic', marginTop: 4 }}>
+                  <div className="order-info" style={{ 
+                    fontStyle: 'italic', 
+                    color: 'var(--hint-color)',
+                    padding: '12px',
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    borderRadius: '8px',
+                    marginBottom: '16px'
+                  }}>
                     "{order.comment}"
                   </div>
                 )}
                 
                 <div className="order-actions">
-                    <button
-                      className="btn btn-accept"
-                      onClick={() => handleAcceptOrder(order._id || order.id)}
-                    >
-                      Принять
-                    </button>
-                    <button
-                      className="btn btn-reject"
-                      onClick={() => handleRejectOrder(order._id || order.id)}
-                    >
-                      Скрыть
-                    </button>
+                  <button
+                    className="btn btn-accept"
+                    onClick={() => handleAcceptOrder(order._id || order.id)}
+                  >
+                    Принять
+                  </button>
+                  <button
+                    className="btn btn-reject"
+                    onClick={() => handleRejectOrder(order._id || order.id)}
+                  >
+                    Скрыть
+                  </button>
                 </div>
               </div>
             ))

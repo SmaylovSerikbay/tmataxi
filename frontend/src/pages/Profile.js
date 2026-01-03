@@ -12,7 +12,6 @@ function Profile({ user, userType, setUserType }) {
   const [driver, setDriver] = useState(null);
   const [loading, setLoading] = useState(true);
   
-  // Registration state
   const [isRegistering, setIsRegistering] = useState(false);
   const [formData, setFormData] = useState({
     carModel: '',
@@ -34,7 +33,6 @@ function Profile({ user, userType, setUserType }) {
       const driverData = await getDriver(tgUser.id.toString());
       setDriver(driverData);
     } catch (error) {
-      // Not a driver yet
       console.log('Not a driver yet');
     } finally {
       setLoading(false);
@@ -56,9 +54,11 @@ function Profile({ user, userType, setUserType }) {
       );
       setDriver(driverData);
       setIsRegistering(false);
-      // Switch to driver mode automatically after registration
       setUserType('driver');
       navigate('/');
+      if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+      }
     } catch (error) {
       alert('Ошибка регистрации: ' + error.message);
     }
@@ -68,6 +68,9 @@ function Profile({ user, userType, setUserType }) {
     const newType = userType === 'passenger' ? 'driver' : 'passenger';
     setUserType(newType);
     navigate('/');
+    if (window.Telegram?.WebApp) {
+      window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+    }
   };
 
   const getInitials = (name) => {
@@ -77,10 +80,20 @@ function Profile({ user, userType, setUserType }) {
   const displayName = user ? (user.firstName || user.username || 'User') : 'Guest';
   const displayUsername = user?.username ? `@${user.username}` : '';
 
-  if (loading) return <div className="container"><p style={{textAlign: 'center', marginTop: 20}}>Загрузка...</p></div>;
+  if (loading) {
+    return (
+      <div style={{ padding: '48px 20px', textAlign: 'center', color: 'var(--hint-color)' }}>
+        <p style={{ fontSize: '17px', fontWeight: '400' }}>Загрузка...</p>
+      </div>
+    );
+  }
 
   return (
     <div>
+      <div className="page-header">
+        <h2>Профиль</h2>
+      </div>
+
       <div className="home-profile">
         <div className="profile-avatar">
           {getInitials(displayName)}
@@ -92,9 +105,9 @@ function Profile({ user, userType, setUserType }) {
       <div className="form-section">
         <h3>Режим приложения</h3>
         <button className="btn" onClick={toggleUserType}>
-          <span>{userType === 'passenger' ? '👤 Я Пассажир' : '🚖 Я Водитель'}</span>
-          <div style={{ color: 'var(--link-color)', fontSize: '15px' }}>
-            Сменить
+          <span>{userType === 'passenger' ? '👤 Пассажир' : '🚖 Водитель'}</span>
+          <div style={{ color: 'var(--link-color)', fontSize: '15px', fontWeight: '400' }}>
+            Сменить →
           </div>
         </button>
       </div>
@@ -102,14 +115,20 @@ function Profile({ user, userType, setUserType }) {
       {userType === 'driver' && driver && (
         <div className="form-section">
           <h3>Данные водителя</h3>
-          <div className="menu-item" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-            <div style={{ fontWeight: 600 }}>{driver.carModel}</div>
-            <div style={{ color: 'var(--hint-color)' }}>{driver.carNumber}</div>
+          <div className="menu-item" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
+            <div style={{ fontWeight: '600', fontSize: '17px' }}>{driver.carModel || driver.car_model}</div>
+            <div style={{ color: 'var(--hint-color)', fontSize: '15px' }}>
+              {driver.carNumber || driver.car_number}
+            </div>
+            {driver.phone && (
+              <div style={{ color: 'var(--hint-color)', fontSize: '15px', marginTop: '4px' }}>
+                {driver.phone}
+              </div>
+            )}
           </div>
         </div>
       )}
 
-      {/* Driver Registration Section */}
       {!driver && (
         <div className="form-section">
           <h3>Стать водителем</h3>
@@ -119,8 +138,8 @@ function Profile({ user, userType, setUserType }) {
               <div className="item-chevron"><ChevronRight /></div>
             </button>
           ) : (
-            <form onSubmit={handleRegisterDriver} style={{ padding: '0' }}>
-               <div className="input-group">
+            <form onSubmit={handleRegisterDriver}>
+              <div className="input-group">
                 <label>Автомобиль</label>
                 <input 
                   type="text" 
@@ -128,6 +147,7 @@ function Profile({ user, userType, setUserType }) {
                   value={formData.carModel}
                   onChange={e => setFormData({...formData, carModel: e.target.value})}
                   required
+                  autoFocus
                 />
               </div>
               <div className="input-group">
@@ -138,16 +158,17 @@ function Profile({ user, userType, setUserType }) {
                   value={formData.carNumber}
                   onChange={e => setFormData({...formData, carNumber: e.target.value.toUpperCase()})}
                   required
+                  maxLength="12"
                 />
               </div>
-              <button type="submit" className="btn btn-primary" style={{ marginTop: 0, borderRadius: 0 }}>
+              <button type="submit" className="btn btn-primary">
                 Сохранить и начать работу
               </button>
               <button 
                 type="button" 
                 className="btn" 
                 onClick={() => setIsRegistering(false)}
-                style={{ justifyContent: 'center', color: '#FF3B30' }}
+                style={{ justifyContent: 'center', color: '#FF3B30', fontWeight: '400' }}
               >
                 Отмена
               </button>
@@ -160,7 +181,7 @@ function Profile({ user, userType, setUserType }) {
         <h3>О приложении</h3>
         <div className="menu-item">
           <span>Версия</span>
-          <span style={{ color: 'var(--hint-color)' }}>1.0.0</span>
+          <span style={{ color: 'var(--hint-color)', fontSize: '15px' }}>1.0.0</span>
         </div>
       </div>
     </div>
@@ -168,4 +189,3 @@ function Profile({ user, userType, setUserType }) {
 }
 
 export default Profile;
-

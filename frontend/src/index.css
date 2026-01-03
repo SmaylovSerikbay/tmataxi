@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 * {
   margin: 0;
@@ -8,7 +8,7 @@
 }
 
 :root {
-  /* Telegram Theme Variables Fallbacks - Dark Theme Default */
+  /* Apple/Tesla Dark Theme */
   --tg-theme-bg-color: #000000;
   --tg-theme-secondary-bg-color: #1c1c1d;
   --tg-theme-text-color: #ffffff;
@@ -18,31 +18,47 @@
   --tg-theme-button-text-color: #ffffff;
   --tg-theme-header-bg-color: #1c1c1d;
   
-  /* Internal Variables mapped to Telegram's */
-  --bg-color: #1c1c1d; /* Card Background */
-  --page-bg-color: #000000; /* Page Background */
+  /* Apple Design System Colors */
+  --bg-color: #1c1c1e;
+  --page-bg-color: #000000;
   --text-color: #ffffff;
   --hint-color: #8e8e93;
   --link-color: #007aff;
   --button-color: #007aff;
   --button-text-color: #ffffff;
-  --header-bg-color: #1c1c1d;
+  --separator-color: rgba(255, 255, 255, 0.1);
   
-  --separator-color: rgba(255, 255, 255, 0.15);
-  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  /* Apple/Tesla Typography */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', sans-serif;
+  --font-size-large: 34px;
+  --font-size-title: 28px;
+  --font-size-headline: 22px;
+  --font-size-body: 17px;
+  --font-size-subhead: 15px;
+  --font-size-caption: 13px;
+  
+  /* Spacing System (Apple 8pt grid) */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+  
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
 }
 
 @media (prefers-color-scheme: light) {
   :root {
-     /* Light Theme Overrides */
-    --tg-theme-bg-color: #ffffff;
-    --tg-theme-secondary-bg-color: #f2f2f7;
-    --tg-theme-text-color: #000000;
-    --separator-color: rgba(0, 0, 0, 0.1);
-    
     --bg-color: #ffffff;
-    --page-bg-color: #f2f2f7;
-    --text-color: #000000;
+    --page-bg-color: #f5f5f7;
+    --text-color: #1d1d1f;
+    --hint-color: #86868b;
+    --separator-color: rgba(0, 0, 0, 0.08);
   }
 }
 
@@ -50,9 +66,12 @@ body {
   font-family: var(--font-family);
   background-color: var(--page-bg-color);
   color: var(--text-color);
-  font-size: 16px; /* Slightly smaller for density */
-  line-height: 1.5;
+  font-size: var(--font-size-body);
+  line-height: 1.47059;
+  font-weight: 400;
+  letter-spacing: -0.022em;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
@@ -64,6 +83,7 @@ button {
   border: none;
   background: none;
   cursor: pointer;
+  font-size: inherit;
 }
 
 a {
@@ -74,4 +94,5 @@ a {
 input, textarea, select {
   font-family: inherit;
   color: var(--text-color);
+  font-size: var(--font-size-body);
 }

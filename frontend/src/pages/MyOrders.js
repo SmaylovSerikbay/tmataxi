@@ -51,7 +51,7 @@ function MyOrders({ user, userType }) {
 
   useEffect(() => {
     loadOrders();
-    const interval = setInterval(loadOrders, 15000); // Auto-refresh every 15s
+    const interval = setInterval(loadOrders, 15000);
     return () => clearInterval(interval);
   }, [loadOrders]);
 
@@ -71,15 +71,15 @@ function MyOrders({ user, userType }) {
     switch (status) {
       case 'pending': return 'status-pending';
       case 'accepted': return 'status-accepted';
-      case 'completed': return 'status-completed'; // Add css for this
+      case 'completed': return 'status-completed';
       default: return '';
     }
   };
 
   if (loading) {
     return (
-      <div className="container" style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--hint-color)' }}>
-        <p>Загрузка...</p>
+      <div style={{ padding: '48px 20px', textAlign: 'center', color: 'var(--hint-color)' }}>
+        <p style={{ fontSize: '17px', fontWeight: '400' }}>Загрузка...</p>
       </div>
     );
   }
@@ -91,8 +91,11 @@ function MyOrders({ user, userType }) {
       </div>
 
       {orders.length === 0 ? (
-        <div className="no-orders" style={{ marginTop: 100 }}>
-          <p>История заказов пуста</p>
+        <div className="no-orders" style={{ marginTop: '80px' }}>
+          <p style={{ fontSize: '17px', marginBottom: '8px' }}>История заказов пуста</p>
+          <p style={{ fontSize: '15px', color: 'var(--hint-color)' }}>
+            {userType === 'driver' ? 'Принимайте заказы в ленте' : 'Создайте новый заказ'}
+          </p>
         </div>
       ) : (
         <div className="orders-list">
@@ -106,34 +109,78 @@ function MyOrders({ user, userType }) {
                   {getStatusText(order.status)}
                 </span>
               </div>
+              
               <div className="order-info">
                 <strong>Откуда:</strong> {order.from?.city || order.from_city}
               </div>
+              <div className="order-info" style={{ marginBottom: '4px', paddingLeft: '16px' }}>
+                {order.from?.address || order.from_address}
+              </div>
+              
               <div className="order-info">
                 <strong>Куда:</strong> {order.to?.city || order.to_city}
               </div>
-              <div className="order-info">
-                <strong>Дата:</strong> {new Date(order.date).toLocaleString('ru-RU', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+              <div className="order-info" style={{ marginBottom: '16px', paddingLeft: '16px' }}>
+                {order.to?.address || order.to_address}
+              </div>
+              
+              <div className="order-info" style={{ 
+                fontSize: '15px', 
+                color: 'var(--hint-color)',
+                marginBottom: '16px'
+              }}>
+                {new Date(order.date).toLocaleString('ru-RU', { 
+                  month: 'short', 
+                  day: 'numeric', 
+                  hour: '2-digit', 
+                  minute: '2-digit' 
+                })}
               </div>
               
               {userType === 'passenger' && order.driver && (
-                <div className="driver-info-box" style={{ marginTop: 10, padding: 8, background: 'rgba(255,255,255,0.05)', borderRadius: 8 }}>
-                  <div style={{ fontWeight: 600 }}>🚕 Вас везет: {order.driver.name}</div>
-                  <div style={{ fontSize: 13, color: 'var(--hint-color)' }}>
-                    {order.driver.carModel} • {order.driver.carNumber}
+                <div className="driver-info-box">
+                  <div style={{ fontWeight: '600', marginBottom: '8px', fontSize: '17px' }}>
+                    🚕 Вас везет: {order.driver.name}
                   </div>
-                  <a href={`tel:${order.driver.phone}`} style={{ display: 'block', marginTop: 5, color: '#34C759', textDecoration: 'none' }}>
+                  <div style={{ fontSize: '15px', color: 'var(--hint-color)', marginBottom: '12px' }}>
+                    {order.driver.carModel || order.driver.car_model} • {order.driver.carNumber || order.driver.car_number}
+                  </div>
+                  <a 
+                    href={`tel:${order.driver.phone}`} 
+                    style={{ 
+                      display: 'inline-block',
+                      fontSize: '15px',
+                      fontWeight: '500',
+                      color: '#34C759',
+                      textDecoration: 'none',
+                      padding: '8px 16px',
+                      background: 'rgba(52, 199, 89, 0.1)',
+                      borderRadius: '8px'
+                    }}
+                  >
                     📞 Позвонить водителю
                   </a>
                 </div>
               )}
 
-              {userType === 'driver' && (
-                 <div className="driver-info-box" style={{ marginTop: 10 }}>
-                    <a href={`tel:${order.phone}`} style={{ color: '#34C759', textDecoration: 'none' }}>
-                        📞 Позвонить пассажиру
-                    </a>
-                 </div>
+              {userType === 'driver' && order.phone && (
+                <div className="driver-info-box">
+                  <a 
+                    href={`tel:${order.phone}`} 
+                    style={{ 
+                      display: 'inline-block',
+                      fontSize: '15px',
+                      fontWeight: '500',
+                      color: '#34C759',
+                      textDecoration: 'none',
+                      padding: '8px 16px',
+                      background: 'rgba(52, 199, 89, 0.1)',
+                      borderRadius: '8px'
+                    }}
+                  >
+                    📞 Позвонить пассажиру
+                  </a>
+                </div>
               )}
             </div>
           ))}

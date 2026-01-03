@@ -89,8 +89,16 @@ function PassengerOrder({ user }) {
         alert('Заказ создан!');
       }
       
-      // Reset form or redirect handled by user manually going to "Orders" tab
-      setFormData(prev => ({...prev, price: '', comment: ''}));
+      // Reset form
+      setFormData(prev => ({
+        ...prev,
+        fromCity: '',
+        fromAddress: '',
+        toCity: '',
+        toAddress: '',
+        price: '',
+        comment: ''
+      }));
       
     } catch (error) {
       console.error('Error creating order:', error);
@@ -122,7 +130,7 @@ function PassengerOrder({ user }) {
               value={formData.fromCity}
               onChange={handleChange}
               required
-              placeholder="Город"
+              placeholder="Город отправления"
             />
           </div>
           <div className="input-group">
@@ -145,7 +153,7 @@ function PassengerOrder({ user }) {
               value={formData.toCity}
               onChange={handleChange}
               required
-              placeholder="Город"
+              placeholder="Город назначения"
             />
           </div>
           <div className="input-group">
@@ -187,10 +195,50 @@ function PassengerOrder({ user }) {
           
           <div className="input-group">
             <label>Пассажиров</label>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <button type="button" onClick={() => setFormData(p => ({...p, passengersCount: Math.max(1, p.passengersCount - 1)}))} style={{ fontSize: '20px', padding: '0 10px', color: 'var(--link-color)', background: 'none', border: 'none' }}>−</button>
-                <span style={{ fontSize: '17px', minWidth: '20px', textAlign: 'center' }}>{formData.passengersCount}</span>
-                <button type="button" onClick={() => setFormData(p => ({...p, passengersCount: Math.min(8, p.passengersCount + 1)}))} style={{ fontSize: '20px', padding: '0 10px', color: 'var(--link-color)', background: 'none', border: 'none' }}>+</button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginLeft: 'auto' }}>
+              <button 
+                type="button" 
+                onClick={() => setFormData(p => ({...p, passengersCount: Math.max(1, p.passengersCount - 1)}))} 
+                style={{ 
+                  width: '36px', 
+                  height: '36px', 
+                  borderRadius: '8px',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  color: 'var(--link-color)',
+                  fontSize: '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontWeight: '600'
+                }}
+              >
+                −
+              </button>
+              <span style={{ fontSize: '17px', minWidth: '24px', textAlign: 'center', fontWeight: '600' }}>
+                {formData.passengersCount}
+              </span>
+              <button 
+                type="button" 
+                onClick={() => setFormData(p => ({...p, passengersCount: Math.min(8, p.passengersCount + 1)}))} 
+                style={{ 
+                  width: '36px', 
+                  height: '36px', 
+                  borderRadius: '8px',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  color: 'var(--link-color)',
+                  fontSize: '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontWeight: '600'
+                }}
+              >
+                +
+              </button>
             </div>
           </div>
 
@@ -201,18 +249,32 @@ function PassengerOrder({ user }) {
               checked={formData.luggage}
               onChange={handleChange}
             />
-            <label style={{ width: 'auto' }}>Нужен багажник</label>
+            <label>Нужен багажник</label>
           </div>
         </div>
         
         <div className="form-section">
-           <h3>Стоимость</h3>
-           <div className="input-group">
-            <button type="button" onClick={toggleCurrency} style={{ textAlign: 'left', padding: 0, color: 'var(--link-color)', fontSize: '16px', background: 'none', border: 'none', width: '100%' }}>
-              {currency === 'KZT' ? 'Валюта: Тенге (₸) ⇄' : 'Валюта: Сум (UZS) ⇄'}
+          <h3>Стоимость</h3>
+          <div className="input-group">
+            <label>Валюта</label>
+            <button 
+              type="button" 
+              onClick={toggleCurrency} 
+              style={{ 
+                marginLeft: 'auto',
+                background: 'none',
+                border: 'none',
+                color: 'var(--link-color)',
+                fontSize: '17px',
+                fontWeight: '400',
+                cursor: 'pointer',
+                padding: 0
+              }}
+            >
+              {currency === 'KZT' ? '₸ Тенге' : 'сум UZS'} ⇄
             </button>
-           </div>
-           <div className="input-group">
+          </div>
+          <div className="input-group">
             <label>Ваша цена</label>
             <input
               type="number"
@@ -223,19 +285,20 @@ function PassengerOrder({ user }) {
               min="0"
               step="100"
               placeholder={`0 ${currencySymbol}`}
-              style={{ fontWeight: '600', color: '#34C759' }}
+              style={{ fontWeight: '600', color: '#34C759', textAlign: 'right' }}
             />
           </div>
         </div>
 
         <div className="form-section">
           <div className="input-group textarea-group">
+            <label>Комментарий</label>
             <textarea
               name="comment"
               value={formData.comment}
               onChange={handleChange}
-              placeholder="Комментарий к заказу (необязательно)"
-              style={{ minHeight: '60px' }}
+              placeholder="Дополнительная информация (необязательно)"
+              style={{ minHeight: '100px' }}
             />
           </div>
         </div>
@@ -243,7 +306,6 @@ function PassengerOrder({ user }) {
         <button type="submit" className="btn btn-primary" disabled={loading}>
           {loading ? 'Создание...' : 'Создать заказ'}
         </button>
-        <div style={{ height: '20px' }}></div>
       </form>
     </div>
   );

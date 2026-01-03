@@ -1,16 +1,22 @@
+/* Apple/Tesla Bottom Navigation - Ultra Clean */
+
 .bottom-nav {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: rgba(28, 28, 30, 0.95); /* iOS Dark Tab Bar style */
-  backdrop-filter: blur(10px);
-  border-top: 0.5px solid rgba(255, 255, 255, 0.15);
+  background-color: rgba(28, 28, 30, 0.8);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-top: 0.5px solid var(--separator-color);
   display: flex;
   justify-content: space-around;
-  padding-bottom: env(safe-area-inset-bottom);
-  height: 60px;
+  align-items: center;
+  padding: var(--spacing-xs) 0;
+  padding-bottom: calc(var(--spacing-xs) + env(safe-area-inset-bottom));
+  height: calc(60px + env(safe-area-inset-bottom));
   z-index: 1000;
+  box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.3);
 }
 
 .nav-item {
@@ -21,25 +27,45 @@
   justify-content: center;
   background: none;
   border: none;
-  color: #8E8E93; /* Gray inactive */
+  color: var(--hint-color);
   font-size: 10px;
   font-weight: 500;
   gap: 4px;
   cursor: pointer;
-  padding: 8px 0;
+  padding: var(--spacing-xs) 0;
+  transition: all 0.2s ease;
+  letter-spacing: 0.01em;
+}
+
+.nav-item:active {
+  transform: scale(0.95);
 }
 
 .nav-item.active {
-  color: #007AFF; /* iOS Blue active */
+  color: var(--link-color);
 }
 
 .nav-item svg {
   width: 24px;
   height: 24px;
+  transition: transform 0.2s ease;
 }
 
-/* Add padding to body so content isn't hidden behind nav */
-.App {
-  padding-bottom: 80px !important;
+.nav-item.active svg {
+  transform: scale(1.1);
 }
 
+.nav-item span {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* Light mode support */
+@media (prefers-color-scheme: light) {
+  .bottom-nav {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-top: 0.5px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.05);
+  }
+}

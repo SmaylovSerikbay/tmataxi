@@ -1,181 +1,155 @@
+/* Apple/Tesla Minimalist Design System */
+
 .App {
   max-width: 600px;
   margin: 0 auto;
   min-height: 100vh;
   background-color: var(--page-bg-color);
-  padding: 16px;
-  /* Extra padding for bottom navigation */
-  padding-bottom: 90px !important; 
+  padding: var(--spacing-md);
+  padding-bottom: 100px;
 }
 
-/* Rounded Card Style (Telegram Inset Grouped) */
-.form-section, .orders-list, .menu-list {
-  background-color: transparent;
-  margin-top: 16px; /* Reduced top margin */
-  margin-bottom: 24px;
+/* Content Container */
+.content-container {
+  max-width: 100%;
 }
 
-.form-section > h3, .section-header {
-  margin: 0;
-  padding: 0 12px 8px;
-  font-size: 13px;
-  text-transform: uppercase;
-  color: var(--hint-color);
-  background-color: transparent;
-  font-weight: 500;
-  letter-spacing: -0.1px;
-}
-
-/* Container for items inside the section */
-.form-group-content, 
-.form-section > div:not(h3):not(.form-group-content),
-.form-section > form {
-  background-color: var(--bg-color);
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-/* Special handling for form direct children if form is not the wrapper */
-.form-section > .btn,
-.form-section > .input-group,
-.form-section > .checkbox-group,
-.form-section > .menu-item {
-  background-color: var(--bg-color);
-}
-
-/* First and Last child border radius logic */
-.form-section > .btn:first-of-type,
-.form-section > .input-group:first-of-type,
-.form-section > .checkbox-group:first-of-type,
-.form-section > .menu-item:first-of-type {
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
-}
-
-.form-section > .btn:last-child,
-.form-section > .input-group:last-child,
-.form-section > .checkbox-group:last-child,
-.form-section > .menu-item:last-child {
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
-}
-
-/* Separators */
-.input-group:not(:last-child)::after,
-.btn:not(:last-child)::after,
-.order-card:not(:last-child)::after,
-.menu-item:not(:last-child)::after {
-  content: '';
-  position: absolute;
-  left: 16px; /* Align with text start better */
-  right: 0;
-  bottom: 0;
-  height: 0.5px;
-  background-color: var(--separator-color);
-}
-
-/* List Items / Cells */
-.input-group, .btn, .order-card, .menu-item {
-  position: relative;
-  padding: 12px 16px;
+/* Page Header - Large Title Style */
+.page-header {
   display: flex;
   align-items: center;
-  min-height: 50px;
-  color: var(--text-color);
-  background-color: var(--bg-color);
-}
-
-/* Icons */
-.item-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 7px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 14px;
-  color: #fff;
-}
-
-.item-icon svg {
-  width: 18px;
-  height: 18px;
-  stroke-width: 2.5;
-}
-
-/* Chevrons */
-.item-chevron {
-  margin-left: auto;
-  color: var(--hint-color);
-  opacity: 0.5;
-}
-
-/* Inputs within Cells */
-.input-group {
-  flex-direction: row; /* iOS Form Style: Label Left, Input Right */
   justify-content: space-between;
+  padding: var(--spacing-md) var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+  background: transparent;
+}
+
+.page-header h2 {
+  font-size: var(--font-size-title);
+  font-weight: 700;
+  letter-spacing: -0.022em;
+  color: var(--text-color);
+  margin: 0;
+  line-height: 1.1;
+}
+
+/* Form Sections - Clean & Spacious */
+.form-section {
+  background: transparent;
+  margin-bottom: var(--spacing-xl);
+}
+
+.form-section > h3 {
+  font-size: var(--font-size-caption);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--hint-color);
+  margin-bottom: var(--spacing-sm);
+  padding: 0 var(--spacing-sm);
+}
+
+/* Input Groups - Apple Style */
+.input-group {
+  position: relative;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md);
+  background-color: var(--bg-color);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-xs);
+  min-height: 56px;
+  transition: background-color 0.2s ease;
+}
+
+.input-group:active {
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .input-group label {
-  font-size: 16px;
+  font-size: var(--font-size-body);
+  font-weight: 400;
   color: var(--text-color);
-  width: 35%;
-  flex-shrink: 0;
+  flex: 0 0 120px;
+  letter-spacing: -0.022em;
 }
 
-.input-group input, 
+.input-group input,
 .input-group select {
-  width: 65%;
+  flex: 1;
   border: none;
   background: transparent;
-  font-size: 16px;
+  font-size: var(--font-size-body);
   padding: 0;
   outline: none;
-  color: var(--link-color); /* Blue text for input values often */
+  color: var(--text-color);
   text-align: right;
+  font-weight: 400;
+  letter-spacing: -0.022em;
 }
 
 .input-group input::placeholder {
   color: var(--hint-color);
+  font-weight: 400;
 }
 
-/* Textarea needs different layout */
+/* Textarea Group */
 .input-group.textarea-group {
   flex-direction: column;
   align-items: flex-start;
+  padding: var(--spacing-md);
+  min-height: auto;
 }
 
 .input-group.textarea-group label {
   width: 100%;
-  margin-bottom: 8px;
+  margin-bottom: var(--spacing-sm);
 }
 
 .input-group textarea {
   width: 100%;
   border: none;
   background: transparent;
-  font-size: 16px;
+  font-size: var(--font-size-body);
   padding: 0;
   outline: none;
   color: var(--text-color);
   resize: none;
-  min-height: 80px;
+  min-height: 100px;
+  line-height: 1.47059;
+  font-weight: 400;
+  letter-spacing: -0.022em;
 }
 
-/* Buttons as List Items */
+.input-group textarea::placeholder {
+  color: var(--hint-color);
+}
+
+/* Buttons - Apple Style */
 .btn {
   width: 100%;
-  text-align: left;
+  padding: var(--spacing-md);
+  background-color: var(--bg-color);
+  border-radius: var(--radius-md);
   color: var(--text-color);
-  font-size: 16px;
+  font-size: var(--font-size-body);
   font-weight: 400;
-  border: none; /* Reset default border */
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 56px;
+  margin-bottom: var(--spacing-xs);
+  transition: all 0.2s ease;
+  letter-spacing: -0.022em;
+  border: none;
   cursor: pointer;
 }
 
 .btn:active {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.05);
+  transform: scale(0.98);
 }
 
 .btn-primary {
@@ -183,190 +157,297 @@
   color: var(--button-text-color) !important;
   justify-content: center;
   font-weight: 600;
-  border-radius: 12px !important;
-  margin-top: 16px;
+  font-size: var(--font-size-body);
+  margin-top: var(--spacing-md);
+  margin-bottom: 0;
+  letter-spacing: -0.011em;
 }
 
-.btn-primary::after {
-  display: none;
+.btn-primary:active {
+  background-color: var(--button-color) !important;
+  opacity: 0.8;
 }
 
-/* Back Button */
-.btn-back {
-  padding: 0;
-  color: var(--link-color);
-  font-size: 16px;
+/* Checkbox Group */
+.checkbox-group {
   display: flex;
   align-items: center;
-  background: transparent;
-  height: 100%;
-  border: none;
+  padding: var(--spacing-md);
+  background-color: var(--bg-color);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-xs);
+  min-height: 56px;
 }
 
-/* Page Header */
-.page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: transparent;
-  padding: 8px 8px;
-  height: 44px;
-  margin-bottom: 8px;
+.checkbox-group input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+  margin-right: var(--spacing-md);
+  cursor: pointer;
+  accent-color: var(--button-color);
 }
 
-.page-header h2 {
-  font-size: 28px; /* Large Title Style */
-  font-weight: 700;
-  margin: 0;
-  flex: 1;
-  text-align: left; /* iOS 11+ Style */
+.checkbox-group label {
+  font-size: var(--font-size-body);
   color: var(--text-color);
+  font-weight: 400;
+  letter-spacing: -0.022em;
 }
 
-/* Home Profile */
+/* Profile Section */
 .home-profile {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px 16px;
-  margin-bottom: 0px;
+  padding: var(--spacing-xxl) var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
 }
 
 .profile-avatar {
-  width: 80px;
-  height: 80px;
+  width: 96px;
+  height: 96px;
   border-radius: 50%;
-  background-color: #34C759;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
-  color: #fff;
+  font-size: 36px;
+  color: #ffffff;
   font-weight: 600;
-  margin-bottom: 12px;
+  margin-bottom: var(--spacing-md);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .profile-name {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: var(--font-size-headline);
+  font-weight: 600;
   color: var(--text-color);
-  margin-bottom: 4px;
+  margin-bottom: var(--spacing-xs);
+  letter-spacing: -0.022em;
 }
 
 .profile-username {
-  font-size: 15px;
+  font-size: var(--font-size-subhead);
   color: var(--hint-color);
+  font-weight: 400;
 }
 
-/* Order Cards */
+/* Order Cards - Clean & Elegant */
 .orders-list {
   background: transparent;
 }
 
 .order-card {
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 16px;
-  gap: 8px;
   background-color: var(--bg-color);
-  margin-bottom: 12px;
-  border-radius: 12px !important; /* Force rounded */
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  transition: all 0.2s ease;
 }
 
-.order-card::after {
-  display: none;
+.order-card:active {
+  transform: scale(0.98);
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .order-header {
   display: flex;
   justify-content: space-between;
-  width: 100%;
-  margin-bottom: 4px;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--separator-color);
 }
 
 .order-price {
+  font-size: var(--font-size-headline);
   font-weight: 700;
-  color: #34C759;
-  font-size: 18px;
+  color: #34c759;
+  letter-spacing: -0.022em;
 }
 
 .order-info {
-  font-size: 15px;
+  font-size: var(--font-size-body);
   color: var(--text-color);
+  margin-bottom: var(--spacing-sm);
+  line-height: 1.47059;
+  letter-spacing: -0.022em;
 }
 
 .order-info strong {
   color: var(--hint-color);
-  font-weight: 400;
+  font-weight: 500;
+  margin-right: var(--spacing-xs);
 }
 
 .status-badge {
-  font-size: 13px;
-  padding: 4px 10px;
-  border-radius: 6px;
+  font-size: var(--font-size-caption);
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
   background-color: rgba(255, 255, 255, 0.1);
   color: var(--text-color);
+  letter-spacing: 0.02em;
 }
 
 .status-accepted {
-    background-color: rgba(52, 199, 89, 0.2);
-    color: #34C759;
+  background-color: rgba(52, 199, 89, 0.2);
+  color: #34c759;
+}
+
+.status-pending {
+  background-color: rgba(255, 204, 0, 0.2);
+  color: #ffcc00;
+}
+
+.status-completed {
+  background-color: rgba(142, 142, 147, 0.2);
+  color: var(--hint-color);
 }
 
 /* Order Actions */
 .order-actions {
   display: flex;
-  gap: 10px;
-  width: 100%;
-  margin-top: 12px;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--separator-color);
 }
 
 .order-actions .btn {
   flex: 1;
   justify-content: center;
-  border-radius: 10px !important;
-  height: 40px;
+  border-radius: var(--radius-md);
+  min-height: 48px;
   font-weight: 600;
-  font-size: 15px;
-  border: none;
+  font-size: var(--font-size-subhead);
+  margin: 0;
+  letter-spacing: -0.011em;
 }
 
 .btn-accept {
-  background-color: rgba(52, 199, 89, 0.2) !important;
-  color: #34C759 !important;
+  background-color: rgba(52, 199, 89, 0.15) !important;
+  color: #34c759 !important;
+}
+
+.btn-accept:active {
+  background-color: rgba(52, 199, 89, 0.25) !important;
 }
 
 .btn-reject {
-  background-color: rgba(255, 59, 48, 0.2) !important;
-  color: #FF3B30 !important;
+  background-color: rgba(255, 59, 48, 0.15) !important;
+  color: #ff3b30 !important;
 }
 
-/* Checkbox */
-.checkbox-group {
-  background-color: var(--bg-color);
-  padding: 12px 16px;
+.btn-reject:active {
+  background-color: rgba(255, 59, 48, 0.25) !important;
+}
+
+.btn-online {
+  background-color: rgba(52, 199, 89, 0.15) !important;
+  color: #34c759 !important;
+}
+
+.btn-offline {
+  background-color: rgba(255, 59, 48, 0.15) !important;
+  color: #ff3b30 !important;
+}
+
+/* No Orders State */
+.no-orders {
+  text-align: center;
+  padding: var(--spacing-xxl) var(--spacing-md);
+  color: var(--hint-color);
+}
+
+.no-orders p {
+  font-size: var(--font-size-body);
+  font-weight: 400;
+  letter-spacing: -0.022em;
+}
+
+/* Menu Items */
+.menu-item {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md);
+  background-color: var(--bg-color);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-xs);
+  min-height: 56px;
 }
 
-.checkbox-group input {
-  margin-right: 12px;
+.menu-item span {
+  font-size: var(--font-size-body);
+  color: var(--text-color);
+  font-weight: 400;
+  letter-spacing: -0.022em;
+}
+
+/* Icons */
+.item-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: var(--spacing-md);
+  color: #ffffff;
+}
+
+.item-icon svg {
   width: 20px;
   height: 20px;
 }
 
-.btn-online {
-    background-color: rgba(52, 199, 89, 0.2) !important;
-    color: #34C759 !important;
+.item-chevron {
+  margin-left: auto;
+  color: var(--hint-color);
+  opacity: 0.5;
 }
 
-.btn-offline {
-    background-color: rgba(255, 59, 48, 0.2) !important;
-    color: #FF3B30 !important;
+/* Driver Info Box */
+.driver-info-box {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-md);
+  background-color: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--separator-color);
 }
 
-.no-orders {
-    text-align: center;
-    color: var(--hint-color);
-    padding: 20px;
+.driver-info-box div {
+  font-size: var(--font-size-body);
+  letter-spacing: -0.022em;
+}
+
+.driver-info-box a {
+  display: inline-block;
+  margin-top: var(--spacing-sm);
+  font-size: var(--font-size-subhead);
+  font-weight: 500;
+  color: #34c759;
+}
+
+/* Form Improvements */
+.order-form {
+  max-width: 100%;
+}
+
+/* Remove separators between input groups - cleaner look */
+.input-group::after {
+  display: none;
+}
+
+/* Focus states */
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+}
+
+/* Smooth transitions */
+* {
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
