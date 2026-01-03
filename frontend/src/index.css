@@ -6,46 +6,26 @@
 
 :root {
   --primary: #007AFF;
-  --primary-dark: #0051D5;
   --success: #34C759;
   --danger: #FF3B30;
   --warning: #FF9500;
-  --bg: #000000;
-  --bg-secondary: #1C1C1E;
-  --bg-tertiary: #2C2C2E;
-  --text: #FFFFFF;
+  --bg: #FFFFFF;
+  --bg-secondary: #F2F2F7;
+  --text: #000000;
   --text-secondary: #8E8E93;
-  --text-tertiary: #636366;
-  --border: rgba(255, 255, 255, 0.1);
-  --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  --radius: 12px;
-  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Light mode для Telegram */
-@media (prefers-color-scheme: light) {
-  :root {
-    --bg: #FFFFFF;
-    --bg-secondary: #F2F2F7;
-    --bg-tertiary: #FFFFFF;
-    --text: #000000;
-    --text-secondary: #8E8E93;
-    --text-tertiary: #C7C7CC;
-    --border: rgba(0, 0, 0, 0.1);
-    --shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  }
+  --border: #E5E5EA;
+  --radius: 10px;
+  --transition: all 0.2s ease;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 
-    'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: var(--bg);
   color: var(--text);
-  line-height: 1.5;
   font-size: 17px;
-  font-weight: 400;
+  line-height: 1.47;
 }
 
 #root {
@@ -64,14 +44,8 @@ a, button, input, select, textarea {
 h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   letter-spacing: -0.022em;
-  line-height: 1.2;
 }
 
-p {
-  line-height: 1.5;
-}
-
-/* Убираем outline для фокуса, добавляем кастомный */
 *:focus {
   outline: none;
 }

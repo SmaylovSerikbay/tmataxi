@@ -108,28 +108,29 @@ function PassengerOrder({ user }) {
   };
 
   return (
-    <div className="container">
+    <div>
       <div className="page-header">
-        <h2>Создать заказ</h2>
         <button className="btn-back" onClick={() => navigate('/')}>← Назад</button>
+        <h2>Новый заказ</h2>
+        <div style={{ width: '60px' }}></div>
       </div>
 
       <form onSubmit={handleSubmit} className="order-form">
         <div className="form-section">
           <h3>Откуда</h3>
           <div className="input-group">
-            <label>Город отправления *</label>
+            <label>Город</label>
             <input
               type="text"
               name="fromCity"
               value={formData.fromCity}
               onChange={handleChange}
               required
-              placeholder="Например: Москва"
+              placeholder="Москва"
             />
           </div>
           <div className="input-group">
-            <label>Адрес отправления *</label>
+            <label>Адрес</label>
             <input
               type="text"
               name="fromAddress"
@@ -144,18 +145,18 @@ function PassengerOrder({ user }) {
         <div className="form-section">
           <h3>Куда</h3>
           <div className="input-group">
-            <label>Город назначения *</label>
+            <label>Город</label>
             <input
               type="text"
               name="toCity"
               value={formData.toCity}
               onChange={handleChange}
               required
-              placeholder="Например: Санкт-Петербург"
+              placeholder="Санкт-Петербург"
             />
           </div>
           <div className="input-group">
-            <label>Адрес назначения *</label>
+            <label>Адрес</label>
             <input
               type="text"
               name="toAddress"
@@ -168,9 +169,9 @@ function PassengerOrder({ user }) {
         </div>
 
         <div className="form-section">
-          <h3>Детали поездки</h3>
+          <h3>Детали</h3>
           <div className="input-group">
-            <label>Дата *</label>
+            <label>Дата</label>
             <input
               type="date"
               name="date"
@@ -181,7 +182,7 @@ function PassengerOrder({ user }) {
             />
           </div>
           <div className="input-group">
-            <label>Время *</label>
+            <label>Время</label>
             <input
               type="time"
               name="time"
@@ -191,7 +192,7 @@ function PassengerOrder({ user }) {
             />
           </div>
           <div className="input-group">
-            <label>Количество пассажиров *</label>
+            <label>Пассажиров</label>
             <input
               type="number"
               name="passengersCount"
@@ -203,7 +204,7 @@ function PassengerOrder({ user }) {
             />
           </div>
           <div className="input-group">
-            <label>Цена (₽) *</label>
+            <label>Цена, ₽</label>
             <input
               type="number"
               name="price"
@@ -212,10 +213,10 @@ function PassengerOrder({ user }) {
               required
               min="0"
               step="100"
-              placeholder="Укажите желаемую цену"
+              placeholder="0"
             />
           </div>
-          <div className="input-group checkbox-group">
+          <div className="checkbox-group">
             <label>
               <input
                 type="checkbox"
@@ -231,7 +232,7 @@ function PassengerOrder({ user }) {
         <div className="form-section">
           <h3>Контакты</h3>
           <div className="input-group">
-            <label>Телефон *</label>
+            <label>Телефон</label>
             <input
               type="tel"
               name="phone"
@@ -252,7 +253,7 @@ function PassengerOrder({ user }) {
           </div>
         </div>
 
-        <button type="submit" className="btn" disabled={loading}>
+        <button type="submit" className="btn" disabled={loading} style={{ marginTop: '8px' }}>
           {loading ? 'Создание...' : 'Создать заказ'}
         </button>
       </form>

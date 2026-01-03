@@ -1,12 +1,12 @@
 .home-header {
+  padding: 20px 16px;
   text-align: center;
-  margin-bottom: 48px;
-  padding-top: 40px;
+  border-bottom: 1px solid var(--border);
 }
 
 .home-header h1 {
-  font-size: 32px;
-  font-weight: 700;
+  font-size: 34px;
+  font-weight: 600;
   margin-bottom: 8px;
   color: var(--text);
   letter-spacing: -0.04em;
@@ -14,15 +14,22 @@
 
 .home-header p {
   color: var(--text-secondary);
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 400;
 }
 
 .home-buttons {
-  margin-bottom: 24px;
+  margin: 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 
 .btn-passenger,
 .btn-driver {
-  margin-bottom: 12px;
+  border-radius: 0;
+  margin: 0;
+}
+
+.home-actions {
+  margin-top: 8px;
 }

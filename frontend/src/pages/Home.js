@@ -16,25 +16,24 @@ function Home({ user, userType, setUserType }) {
   };
 
   return (
-    <div className="container">
+    <div>
       <div className="home-header">
-        <h1>🚖 Междугороднее такси</h1>
-        <p>Выберите ваш статус</p>
+        <h1>Междугороднее такси</h1>
       </div>
 
       <div className="home-buttons">
         <button className="btn btn-passenger" onClick={handlePassengerClick}>
-          👤 Я пассажир
+          Я пассажир
         </button>
         <button className="btn btn-driver" onClick={handleDriverClick}>
-          🚗 Я таксист
+          Я таксист
         </button>
       </div>
 
       {user && (
         <div className="home-actions">
           <button className="btn btn-secondary" onClick={() => navigate('/my-orders')}>
-            📋 Мои заказы
+            Мои заказы
           </button>
         </div>
       )}
@@ -43,4 +42,3 @@ function Home({ user, userType, setUserType }) {
 }
 
 export default Home;
-

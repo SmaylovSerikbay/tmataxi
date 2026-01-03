@@ -58,30 +58,35 @@ function MyOrders({ user, userType }) {
 
   if (loading) {
     return (
-      <div className="container">
-        <p>Загрузка...</p>
+      <div>
+        <div className="page-header">
+          <div style={{ width: '60px' }}></div>
+          <h2>Загрузка...</h2>
+          <div style={{ width: '60px' }}></div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container">
+    <div>
       <div className="page-header">
-        <h2>Мои заказы</h2>
         <button className="btn-back" onClick={() => navigate('/')}>← Назад</button>
+        <h2>Мои заказы</h2>
+        <div style={{ width: '60px' }}></div>
       </div>
 
       {orders.length === 0 ? (
         <div className="no-orders">
-          <p>У вас пока нет заказов</p>
-          <button className="btn" onClick={() => navigate(userType === 'driver' ? '/driver' : '/order')}>
-            {userType === 'driver' ? 'Перейти в панель таксиста' : 'Создать заказ'}
+          <p>Нет заказов</p>
+          <button className="btn" onClick={() => navigate(userType === 'driver' ? '/driver' : '/order')} style={{ marginTop: '8px' }}>
+            {userType === 'driver' ? 'Панель таксиста' : 'Создать заказ'}
           </button>
         </div>
       ) : (
         <div className="orders-list">
           {orders.map(order => (
-            <div key={order._id} className="order-card">
+            <div key={order._id || order.id} className="order-card">
               <div className="order-header">
                 <span className="order-price">{order.price} ₽</span>
                 <span className={`status-badge status-${order.status}`}>
@@ -94,17 +99,17 @@ function MyOrders({ user, userType }) {
                 </span>
               </div>
               <div className="order-info">
-                <strong>📍 Откуда:</strong> {order.from.city}, {order.from.address}
+                <strong>Откуда:</strong> {order.from?.city || order.from_city}, {order.from?.address || order.from_address}
               </div>
               <div className="order-info">
-                <strong>📍 Куда:</strong> {order.to.city}, {order.to.address}
+                <strong>Куда:</strong> {order.to?.city || order.to_city}, {order.to?.address || order.to_address}
               </div>
               <div className="order-info">
-                <strong>📅 Дата:</strong> {new Date(order.date).toLocaleString('ru-RU')}
+                <strong>Дата:</strong> {new Date(order.date).toLocaleString('ru-RU')}
               </div>
               {order.driver && (
                 <div className="order-info">
-                  <strong>🚗 Таксист:</strong> {order.driver.name} ({order.driver.carModel}, {order.driver.carNumber})
+                  <strong>Таксист:</strong> {order.driver.name} ({order.driver.carModel || order.driver.car_model}, {order.driver.carNumber || order.driver.car_number})
                 </div>
               )}
             </div>

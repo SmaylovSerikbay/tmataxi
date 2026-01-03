@@ -1,18 +1,20 @@
 .no-orders {
   text-align: center;
-  padding: 64px 24px;
-  background: var(--bg-secondary);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
+  padding: 40px 16px;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 
 .no-orders p {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   color: var(--text-secondary);
-  font-size: 17px;
-  line-height: 1.6;
+  font-size: 15px;
+  line-height: 1.47;
 }
 
 .orders-list {
-  margin-top: 24px;
+  margin: 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }

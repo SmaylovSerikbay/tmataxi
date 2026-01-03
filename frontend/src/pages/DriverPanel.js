@@ -175,15 +175,16 @@ function DriverPanel({ user }) {
 
   if (!driver) {
     return (
-      <div className="container">
+      <div>
         <div className="page-header">
-          <h2>Данные автомобиля</h2>
           <button className="btn-back" onClick={() => navigate('/')}>← Назад</button>
+          <h2>Автомобиль</h2>
+          <div style={{ width: '60px' }}></div>
         </div>
 
         <form onSubmit={handleRegister} className="driver-form">
           <div className="input-group">
-            <label>Модель автомобиля *</label>
+            <label>Модель</label>
             <input
               type="text"
               value={formData.carModel}
@@ -194,7 +195,7 @@ function DriverPanel({ user }) {
             />
           </div>
           <div className="input-group">
-            <label>Номер автомобиля *</label>
+            <label>Номер</label>
             <input
               type="text"
               value={formData.carNumber}
@@ -204,7 +205,7 @@ function DriverPanel({ user }) {
               maxLength="9"
             />
           </div>
-          <button type="submit" className="btn" disabled={registering}>
+          <button type="submit" className="btn" disabled={registering} style={{ marginTop: '8px' }}>
             {registering ? 'Сохранение...' : 'Сохранить'}
           </button>
         </form>
@@ -213,17 +214,17 @@ function DriverPanel({ user }) {
   }
 
   return (
-    <div className="container">
+    <div>
       <div className="page-header">
-        <h2>Панель таксиста</h2>
         <button className="btn-back" onClick={() => navigate('/')}>← Назад</button>
+        <h2>Таксист</h2>
+        <div style={{ width: '60px' }}></div>
       </div>
 
       <div className="driver-info card">
-        <h3>{driver.name}</h3>
-        <p>Автомобиль: {driver.carModel}</p>
-        <p>Номер: {driver.carNumber}</p>
-        <p>Телефон: {driver.phone}</p>
+        <h3>{driver.name || driver.name}</h3>
+        <p>{driver.carModel || driver.car_model} • {driver.carNumber || driver.car_number}</p>
+        <p>{driver.phone}</p>
       </div>
 
       <div className="status-control">
@@ -231,7 +232,7 @@ function DriverPanel({ user }) {
           className={`btn ${isOnline ? 'btn-online' : 'btn-offline'}`}
           onClick={handleToggleOnline}
         >
-          {isOnline ? '🟢 Онлайн' : '🔴 Офлайн'}
+          {isOnline ? 'Онлайн' : 'Офлайн'}
         </button>
       </div>
 
@@ -239,10 +240,12 @@ function DriverPanel({ user }) {
         <div className="orders-section">
           <h3>Доступные заказы</h3>
           {orders.length === 0 ? (
-            <p className="no-orders">Нет доступных заказов</p>
+            <div className="no-orders">
+              <p>Нет доступных заказов</p>
+            </div>
           ) : (
             orders.map(order => (
-              <div key={order._id} className="order-card">
+              <div key={order._id || order.id} className="order-card">
                 <div className="order-header">
                   <span className="order-price">{order.price} ₽</span>
                   <span className={`status-badge status-${order.status}`}>
@@ -250,41 +253,41 @@ function DriverPanel({ user }) {
                   </span>
                 </div>
                 <div className="order-info">
-                  <strong>📍 Откуда:</strong> {order.from.city}, {order.from.address}
+                  <strong>Откуда:</strong> {order.from?.city || order.from_city}, {order.from?.address || order.from_address}
                 </div>
                 <div className="order-info">
-                  <strong>📍 Куда:</strong> {order.to.city}, {order.to.address}
+                  <strong>Куда:</strong> {order.to?.city || order.to_city}, {order.to?.address || order.to_address}
                 </div>
                 <div className="order-info">
-                  <strong>📅 Дата:</strong> {new Date(order.date).toLocaleString('ru-RU')}
+                  <strong>Дата:</strong> {new Date(order.date).toLocaleString('ru-RU')}
                 </div>
                 <div className="order-info">
-                  <strong>👥 Пассажиров:</strong> {order.passengersCount}
+                  <strong>Пассажиров:</strong> {order.passengersCount || order.passengers_count}
                 </div>
                 {order.luggage && (
-                  <div className="order-info">🧳 Есть багаж</div>
+                  <div className="order-info">Есть багаж</div>
                 )}
                 <div className="order-info">
-                  <strong>📞 Телефон:</strong> {order.phone}
+                  <strong>Телефон:</strong> {order.phone}
                 </div>
                 {order.comment && (
                   <div className="order-info">
-                    <strong>💬 Комментарий:</strong> {order.comment}
+                    <strong>Комментарий:</strong> {order.comment}
                   </div>
                 )}
                 {order.status === 'pending' && (
                   <div className="order-actions">
                     <button
                       className="btn btn-accept"
-                      onClick={() => handleAcceptOrder(order._id)}
+                      onClick={() => handleAcceptOrder(order._id || order.id)}
                     >
-                      ✅ Принять
+                      Принять
                     </button>
                     <button
                       className="btn btn-reject"
-                      onClick={() => handleRejectOrder(order._id)}
+                      onClick={() => handleRejectOrder(order._id || order.id)}
                     >
-                      ❌ Отклонить
+                      Отклонить
                     </button>
                   </div>
                 )}
@@ -294,8 +297,8 @@ function DriverPanel({ user }) {
         </div>
       )}
 
-      <button className="btn btn-secondary" onClick={() => navigate('/my-orders')}>
-        📋 Мои заказы
+      <button className="btn btn-secondary" onClick={() => navigate('/my-orders')} style={{ marginTop: '8px' }}>
+        Мои заказы
       </button>
     </div>
   );
