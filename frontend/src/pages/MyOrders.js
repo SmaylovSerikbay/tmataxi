@@ -23,7 +23,6 @@ function MyOrders({ user, userType }) {
 
       let ordersData = [];
       if (userType === 'driver') {
-        // Получаем информацию о таксисте по telegramId
         try {
           const driver = await getDriver(tgUser.id.toString());
           if (driver && driver._id) {
@@ -33,7 +32,6 @@ function MyOrders({ user, userType }) {
           console.error('Error loading driver orders:', error);
         }
       } else {
-        // Для пассажира нужно получить passengerId из localStorage или API
         try {
           const passengerId = localStorage.getItem('passengerId');
           if (passengerId) {
@@ -63,19 +61,17 @@ function MyOrders({ user, userType }) {
   return (
     <div>
       <div className="page-header">
-        <button className="btn-back" onClick={() => navigate('/')}>← Назад</button>
+        <button className="btn-back" onClick={() => navigate('/')}>Назад</button>
         <h2>Мои заказы</h2>
-        <div style={{ width: '60px' }}></div>
+        <div style={{ width: '40px' }}></div>
       </div>
 
       {orders.length === 0 ? (
         <div className="no-orders">
           <p>У вас пока нет активных заказов</p>
-          <div className="form-section">
-            <button className="btn btn-primary" onClick={() => navigate(userType === 'driver' ? '/driver' : '/order')}>
-              {userType === 'driver' ? 'Перейти в панель таксиста' : 'Создать новый заказ'}
-            </button>
-          </div>
+          <button className="btn btn-primary" onClick={() => navigate(userType === 'driver' ? '/driver' : '/order')}>
+            {userType === 'driver' ? 'Перейти в панель таксиста' : 'Создать новый заказ'}
+          </button>
         </div>
       ) : (
         <div className="orders-list">

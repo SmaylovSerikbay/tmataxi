@@ -9,86 +9,32 @@
 
 /* Rounded Card Style (Telegram Inset Grouped) */
 .form-section, .orders-list, .menu-list {
-  background-color: var(--bg-color);
-  border-radius: 12px;
-  overflow: hidden;
+  background-color: transparent;
   margin-top: 24px;
   margin-bottom: 24px;
 }
 
-.form-section h3, .section-header {
+.form-section > h3, .section-header {
   margin: 0;
-  padding: 10px 16px 6px;
-  font-size: 14px;
+  padding: 0 12px 8px;
+  font-size: 13px;
   text-transform: uppercase;
-  color: var(--hint-color); /* Changed to gray to match "Settings" header in screenshot if it's outside card, but here we put it outside usually. Wait, in screenshot "Settings" is OUTSIDE the card. */
+  color: var(--hint-color);
   background-color: transparent;
   font-weight: 500;
   letter-spacing: -0.1px;
 }
 
-/* If h3 is inside the card container in HTML, we need to move it out or style it differently. 
-   Assuming standard structure: <div> <h3>Title</h3> <Card>...items...</Card> </div>
-   But my HTML structure is <div class="form-section"> <h3>...</h3> <button>...</div>
-   So I need to adjust .form-section to NOT have background, but have inner container?
-   Or just make h3 white and bold if it's inside?
-   
-   Actually, looking at the screenshot: "Settings" is a header OUTSIDE the card.
-   My current HTML structure wraps everything in .form-section.
-   I will style .form-section as transparent, and the items inside as the card.
-*/
-
-.form-section {
-  background-color: transparent;
-  border-radius: 0;
-  overflow: visible;
-  margin: 24px 0;
-}
-
-.form-section h3 {
-  padding: 0 16px 8px;
-  color: var(--text-color); /* White/Black */
-  font-size: 15px;
-  font-weight: 600;
-  text-transform: none; /* Screenshot "Settings" is Title Case */
-  background: transparent;
-}
-
-.form-group-content {
+/* Container for items inside the section */
+.form-group-content, 
+.form-section > div:not(h3):not(.form-group-content),
+.form-section > form {
   background-color: var(--bg-color);
   border-radius: 12px;
   overflow: hidden;
 }
 
-/* Since I can't easily change HTML structure everywhere without rewriting all files again, 
-   I will use a trick: apply border-radius to first and last children if they are items? 
-   No, easier to just apply bg color to items? No, gaps.
-   
-   Let's stick to: .form-section has the BG color and radius. 
-   The h3 needs to be styled specially if it's the first child.
-*/
-
-.form-section {
-  background-color: transparent; 
-  border-radius: 0;
-  margin-top: 16px;
-  margin-bottom: 16px;
-}
-
-.form-section > h3 {
-  color: var(--text-color);
-  font-weight: 700;
-  font-size: 19px; /* "Settings" size */
-  padding: 0 12px 10px;
-  text-transform: none;
-  background: transparent;
-}
-
-/* The actual list of items needs to be wrapped or identified. 
-   In my current HTML, buttons and inputs are direct children of .form-section.
-   I'll target them to create the "Card" effect.
-*/
-
+/* Special handling for form direct children if form is not the wrapper */
 .form-section > .btn,
 .form-section > .input-group,
 .form-section > .checkbox-group,
@@ -96,15 +42,11 @@
   background-color: var(--bg-color);
 }
 
+/* First and Last child border radius logic */
 .form-section > .btn:first-of-type,
 .form-section > .input-group:first-of-type,
 .form-section > .checkbox-group:first-of-type,
-.form-section > .menu-item:first-of-type,
-/* If h3 is present, the first item after it needs top radius */
-.form-section > h3 + .btn,
-.form-section > h3 + .input-group,
-.form-section > h3 + .checkbox-group,
-.form-section > h3 + .menu-item {
+.form-section > .menu-item:first-of-type {
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
 }
@@ -117,11 +59,18 @@
   border-bottom-right-radius: 12px;
 }
 
-.form-section > .btn:not(:last-child)::after,
-.form-section > .input-group:not(:last-child)::after,
-.form-section > .checkbox-group:not(:last-child)::after,
-.form-section > .menu-item:not(:last-child)::after {
-  left: 56px; /* Indent separator for icons */
+/* Separators */
+.input-group:not(:last-child)::after,
+.btn:not(:last-child)::after,
+.order-card:not(:last-child)::after,
+.menu-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 56px; /* Align with text start */
+  right: 0;
+  bottom: 0;
+  height: 0.5px;
+  background-color: var(--separator-color);
 }
 
 /* List Items / Cells */
@@ -130,71 +79,87 @@
   padding: 12px 16px;
   display: flex;
   align-items: center;
-  min-height: 54px; /* Taller cells */
+  min-height: 50px;
   color: var(--text-color);
+  background-color: var(--bg-color);
 }
 
 /* Icons */
 .item-icon {
   width: 28px;
   height: 28px;
-  border-radius: 6px;
-  background-color: var(--link-color); /* Fallback */
+  border-radius: 7px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 14px;
   color: #fff;
-  font-size: 16px;
 }
 
-.btn .item-icon, .menu-item .item-icon {
-  flex-shrink: 0;
+.item-icon svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2.5;
 }
 
 /* Chevrons */
 .item-chevron {
   margin-left: auto;
   color: var(--hint-color);
-  font-size: 14px;
-  font-weight: 600;
   opacity: 0.5;
-}
-
-.btn::after {
-  /* Chevron via CSS if simpler */
 }
 
 /* Inputs within Cells */
 .input-group {
-  flex-direction: column;
-  align-items: flex-start;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  flex-direction: row; /* iOS Form Style: Label Left, Input Right */
+  justify-content: space-between;
+  align-items: center;
 }
 
 .input-group label {
-  font-size: 13px;
-  color: var(--link-color);
-  margin-bottom: 4px;
-  width: 100%;
+  font-size: 16px;
+  color: var(--text-color);
+  width: 35%;
+  flex-shrink: 0;
 }
 
 .input-group input, 
-.input-group select,
+.input-group select {
+  width: 65%;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  padding: 0;
+  outline: none;
+  color: var(--link-color); /* Blue text for input values often */
+  text-align: right;
+}
+
+.input-group input::placeholder {
+  color: var(--hint-color);
+}
+
+/* Textarea needs different layout */
+.input-group.textarea-group {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.input-group.textarea-group label {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
 .input-group textarea {
   width: 100%;
   border: none;
   background: transparent;
-  font-size: 17px;
-  padding: 2px 0;
+  font-size: 16px;
+  padding: 0;
   outline: none;
   color: var(--text-color);
-}
-
-.input-group textarea {
   resize: none;
-  min-height: 60px;
+  min-height: 80px;
 }
 
 /* Buttons as List Items */
@@ -202,9 +167,7 @@
   width: 100%;
   text-align: left;
   color: var(--text-color);
-  font-size: 17px;
-  justify-content: flex-start;
-  border-radius: 0;
+  font-size: 16px;
   font-weight: 400;
 }
 
@@ -217,27 +180,35 @@
   color: var(--button-text-color) !important;
   justify-content: center;
   font-weight: 600;
-  border-radius: 12px !important; /* Standalone buttons should be rounded */
+  border-radius: 12px !important;
   margin-top: 16px;
 }
 
-.btn-primary:active {
-  opacity: 0.8;
-}
-
-.btn-danger {
-  color: #ff3b30;
+.btn-primary::after {
+  display: none;
 }
 
 /* Back Button */
 .btn-back {
   padding: 0;
   color: var(--link-color);
-  font-size: 17px;
+  font-size: 16px;
   display: flex;
   align-items: center;
   background: transparent;
   height: 100%;
+}
+
+.btn-back::before {
+  content: ''; /* Could be chevron */
+  display: inline-block;
+  /* Simple chevron left */
+  width: 10px; 
+  height: 10px;
+  border-left: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  margin-right: 4px;
 }
 
 /* Page Header */
@@ -249,7 +220,6 @@
   padding: 0 8px;
   height: 44px;
   margin-bottom: 16px;
-  box-shadow: none;
 }
 
 .page-header h2 {
@@ -261,7 +231,7 @@
   color: var(--text-color);
 }
 
-/* Home Page Specific */
+/* Home Profile */
 .home-profile {
   display: flex;
   flex-direction: column;
@@ -274,13 +244,13 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background-color: #34C759; /* Green like screenshot */
+  background-color: #34C759;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 36px;
+  font-size: 32px;
   color: #fff;
-  font-weight: 500;
+  font-weight: 600;
   margin-bottom: 12px;
 }
 
@@ -296,15 +266,19 @@
   color: var(--hint-color);
 }
 
-/* Orders List */
+/* Order Cards */
+.orders-list {
+  background: transparent;
+}
+
 .order-card {
   flex-direction: column;
   align-items: flex-start;
   padding: 16px;
-  gap: 6px;
+  gap: 8px;
   background-color: var(--bg-color);
   margin-bottom: 12px;
-  border-radius: 12px;
+  border-radius: 12px !important; /* Force rounded */
 }
 
 .order-card::after {
@@ -320,20 +294,18 @@
 
 .order-price {
   font-weight: 700;
-  color: #34C759; /* Green price */
+  color: #34C759;
   font-size: 18px;
 }
 
 .order-info {
   font-size: 15px;
   color: var(--text-color);
-  line-height: 1.4;
 }
 
 .order-info strong {
   color: var(--hint-color);
   font-weight: 400;
-  margin-right: 4px;
 }
 
 .status-badge {
@@ -344,16 +316,12 @@
   color: var(--text-color);
 }
 
-.status-pending { color: #FF9500; }
-.status-accepted { color: #34C759; }
-
 /* Order Actions */
 .order-actions {
   display: flex;
   gap: 10px;
   width: 100%;
   margin-top: 12px;
-  border-top: none;
 }
 
 .order-actions .btn {
@@ -363,15 +331,16 @@
   height: 40px;
   font-weight: 600;
   font-size: 15px;
+  border: none;
 }
 
 .btn-accept {
-  background-color: rgba(52, 199, 89, 0.15) !important;
+  background-color: rgba(52, 199, 89, 0.2) !important;
   color: #34C759 !important;
 }
 
 .btn-reject {
-  background-color: rgba(255, 59, 48, 0.15) !important;
+  background-color: rgba(255, 59, 48, 0.2) !important;
   color: #FF3B30 !important;
 }
 
@@ -381,4 +350,10 @@
   padding: 12px 16px;
   display: flex;
   align-items: center;
+}
+
+.checkbox-group input {
+  margin-right: 12px;
+  width: 20px;
+  height: 20px;
 }

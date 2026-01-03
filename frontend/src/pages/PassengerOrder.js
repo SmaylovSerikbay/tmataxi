@@ -23,7 +23,6 @@ function PassengerOrder({ user }) {
   useEffect(() => {
     const tgUser = getTelegramUser();
     if (tgUser) {
-      // Автоматически регистрируем пассажира при загрузке
       const autoRegister = async () => {
         try {
           await registerPassenger(
@@ -37,7 +36,6 @@ function PassengerOrder({ user }) {
       };
       autoRegister();
       
-      // Пытаемся получить телефон из Telegram
       if (window.Telegram?.WebApp) {
         const tg = window.Telegram.WebApp;
         if (tg.initDataUnsafe?.user?.phone_number) {
@@ -66,17 +64,14 @@ function PassengerOrder({ user }) {
         return;
       }
 
-      // Получаем или создаем пассажира (автоматически)
       const passenger = await registerPassenger(
         tgUser.id.toString(),
         `${tgUser.first_name} ${tgUser.last_name || ''}`.trim(),
         formData.phone || tgUser.phone_number || ''
       );
 
-      // Сохраняем passengerId в localStorage
       localStorage.setItem('passengerId', passenger.id || passenger._id);
 
-      // Создаем заказ
       const orderDate = new Date(`${formData.date}T${formData.time}`);
       await createOrder({
         passengerId: passenger.id || passenger._id,
@@ -109,9 +104,9 @@ function PassengerOrder({ user }) {
   return (
     <div>
       <div className="page-header">
-        <button className="btn-back" onClick={() => navigate('/')}>← Назад</button>
+        <button className="btn-back" onClick={() => navigate('/')}>Назад</button>
         <h2>Новый заказ</h2>
-        <div style={{ width: '60px' }}></div>
+        <div style={{ width: '40px' }}></div>
       </div>
 
       <form onSubmit={handleSubmit} className="order-form">
@@ -216,15 +211,13 @@ function PassengerOrder({ user }) {
             />
           </div>
           <div className="checkbox-group">
-            <label>
-              <input
-                type="checkbox"
-                name="luggage"
-                checked={formData.luggage}
-                onChange={handleChange}
-              />
-              Есть багаж
-            </label>
+            <input
+              type="checkbox"
+              name="luggage"
+              checked={formData.luggage}
+              onChange={handleChange}
+            />
+            <label style={{ width: 'auto' }}>Есть багаж</label>
           </div>
         </div>
 
@@ -241,7 +234,7 @@ function PassengerOrder({ user }) {
               placeholder="+7 (999) 123-45-67"
             />
           </div>
-          <div className="input-group">
+          <div className="input-group textarea-group">
             <label>Комментарий</label>
             <textarea
               name="comment"
@@ -252,15 +245,12 @@ function PassengerOrder({ user }) {
           </div>
         </div>
 
-        <div className="form-section">
-          <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? 'Создание...' : 'Создать заказ'}
-          </button>
-        </div>
+        <button type="submit" className="btn btn-primary" disabled={loading}>
+          {loading ? 'Создание...' : 'Создать заказ'}
+        </button>
       </form>
     </div>
   );
 }
 
 export default PassengerOrder;
-

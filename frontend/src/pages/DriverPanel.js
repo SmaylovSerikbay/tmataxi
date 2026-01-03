@@ -43,7 +43,6 @@ function DriverPanel({ user }) {
 
   useEffect(() => {
     if (driver && isOnline) {
-      // Подключаемся к Socket.io
       const newSocket = io(API_URL);
       newSocket.emit('driver-online', driver.id || driver._id);
       
@@ -57,17 +56,15 @@ function DriverPanel({ user }) {
         newSocket.disconnect();
       };
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [driver, isOnline]);
 
   useEffect(() => {
-      if (isOnline && driver) {
-        loadAvailableOrders();
-        const interval = setInterval(loadAvailableOrders, 10000);
-        return () => clearInterval(interval);
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isOnline, driver]);
+    if (isOnline && driver) {
+      loadAvailableOrders();
+      const interval = setInterval(loadAvailableOrders, 10000);
+      return () => clearInterval(interval);
+    }
+  }, [isOnline, driver]);
 
   const loadDriverData = async (telegramId) => {
     try {
@@ -82,7 +79,6 @@ function DriverPanel({ user }) {
       });
     } catch (error) {
       if (error.response?.status === 404) {
-        // Таксист не зарегистрирован - имя и телефон будут из Telegram
         setFormData({
           name: '',
           phone: '',
@@ -115,7 +111,6 @@ function DriverPanel({ user }) {
         return;
       }
       
-      // Автоматически используем данные из Telegram
       const driverData = await registerDriver(
         tgUser.id.toString(),
         `${tgUser.first_name} ${tgUser.last_name || ''}`.trim(),
@@ -176,12 +171,13 @@ function DriverPanel({ user }) {
     return (
       <div>
         <div className="page-header">
-          <button className="btn-back" onClick={() => navigate('/')}>← Назад</button>
+          <button className="btn-back" onClick={() => navigate('/')}>Назад</button>
           <h2>Автомобиль</h2>
-          <div style={{ width: '60px' }}></div>
+          <div style={{ width: '40px' }}></div>
         </div>
 
         <form onSubmit={handleRegister} className="form-section">
+          <h3>Регистрация</h3>
           <div className="input-group">
             <label>Модель</label>
             <input
@@ -204,10 +200,11 @@ function DriverPanel({ user }) {
               maxLength="9"
             />
           </div>
-          <button type="submit" className="btn btn-primary" disabled={registering}>
-            {registering ? 'Сохранение...' : 'Сохранить'}
-          </button>
+          
         </form>
+        <button className="btn btn-primary" onClick={handleRegister} disabled={registering}>
+            {registering ? 'Сохранение...' : 'Сохранить'}
+        </button>
       </div>
     );
   }
@@ -215,14 +212,14 @@ function DriverPanel({ user }) {
   return (
     <div>
       <div className="page-header">
-        <button className="btn-back" onClick={() => navigate('/')}>← Назад</button>
+        <button className="btn-back" onClick={() => navigate('/')}>Назад</button>
         <h2>Таксист</h2>
-        <div style={{ width: '60px' }}></div>
+        <div style={{ width: '40px' }}></div>
       </div>
 
       <div className="form-section">
         <h3>Водитель</h3>
-        <div className="menu-item" style={{ flexDirection: 'column', alignItems: 'flex-start', padding: '12px 16px' }}>
+        <div className="menu-item" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
           <div style={{ fontWeight: 600, fontSize: '17px', color: 'var(--text-color)' }}>{driver.name || driver.name}</div>
           <div style={{ color: 'var(--hint-color)', fontSize: '13px', marginTop: '4px' }}>{driver.carModel || driver.car_model} • {driver.carNumber || driver.car_number}</div>
           <div style={{ color: 'var(--hint-color)', fontSize: '13px' }}>{driver.phone}</div>

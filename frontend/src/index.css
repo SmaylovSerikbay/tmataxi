@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 * {
   margin: 0;
   padding: 0;
@@ -7,8 +9,8 @@
 
 :root {
   /* Telegram Theme Variables Fallbacks - Dark Theme Default */
-  --tg-theme-bg-color: #1c1c1d;
-  --tg-theme-secondary-bg-color: #000000;
+  --tg-theme-bg-color: #000000;
+  --tg-theme-secondary-bg-color: #1c1c1d;
   --tg-theme-text-color: #ffffff;
   --tg-theme-hint-color: #8e8e93;
   --tg-theme-link-color: #007aff;
@@ -17,17 +19,17 @@
   --tg-theme-header-bg-color: #1c1c1d;
   
   /* Internal Variables mapped to Telegram's */
-  --bg-color: var(--tg-theme-bg-color); /* Card Background */
-  --page-bg-color: var(--tg-theme-secondary-bg-color); /* Page Background */
-  --text-color: var(--tg-theme-text-color);
-  --hint-color: var(--tg-theme-hint-color);
-  --link-color: var(--tg-theme-link-color);
-  --button-color: var(--tg-theme-button-color);
-  --button-text-color: var(--tg-theme-button-text-color);
-  --header-bg-color: var(--tg-theme-header-bg-color);
+  --bg-color: #1c1c1d; /* Card Background */
+  --page-bg-color: #000000; /* Page Background */
+  --text-color: #ffffff;
+  --hint-color: #8e8e93;
+  --link-color: #007aff;
+  --button-color: #007aff;
+  --button-text-color: #ffffff;
+  --header-bg-color: #1c1c1d;
   
   --separator-color: rgba(255, 255, 255, 0.15);
-  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 @media (prefers-color-scheme: light) {
@@ -37,6 +39,10 @@
     --tg-theme-secondary-bg-color: #f2f2f7;
     --tg-theme-text-color: #000000;
     --separator-color: rgba(0, 0, 0, 0.1);
+    
+    --bg-color: #ffffff;
+    --page-bg-color: #f2f2f7;
+    --text-color: #000000;
   }
 }
 
@@ -44,7 +50,7 @@ body {
   font-family: var(--font-family);
   background-color: var(--page-bg-color);
   color: var(--text-color);
-  font-size: 17px;
+  font-size: 16px; /* Slightly smaller for density */
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
