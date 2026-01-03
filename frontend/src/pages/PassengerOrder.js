@@ -25,16 +25,11 @@ function PassengerOrder({ user }) {
     const tgUser = getTelegramUser();
     if (tgUser && window.Telegram?.WebApp) {
       const tg = window.Telegram.WebApp;
-      tg.MainButton.text = "Создать заказ";
-      tg.MainButton.show();
       
-      tg.MainButton.onClick(() => {
-         // We can't easily trigger form submit from outside, 
-         // so we rely on the in-form button for now or use a ref.
-         // Better to hide MainButton if we use in-app button, OR attach handler.
-         // For now, let's just use our custom button to be safe and consistent.
-         tg.MainButton.hide();
-      });
+      // Removed MainButton logic to avoid duplicate buttons as requested
+      // tg.MainButton.text = "Создать заказ";
+      // tg.MainButton.show();
+      // tg.MainButton.onClick(() => ...);
 
       if (tg.initDataUnsafe?.user?.phone_number) {
         setFormData(prev => ({ ...prev, phone: tg.initDataUnsafe.user.phone_number }));
