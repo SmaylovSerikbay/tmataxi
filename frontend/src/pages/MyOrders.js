@@ -1,20 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { useNavigate } from 'react-router-dom';
 import { getPassengerOrders, getDriverOrders, getDriver } from '../utils/api';
 import { getTelegramUser } from '../utils/telegram';
 
 function MyOrders({ user, userType }) {
+  // eslint-disable-next-line no-unused-vars
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadOrders();
-    const interval = setInterval(loadOrders, 15000); // Auto-refresh every 15s
-    return () => clearInterval(interval);
-  }, [userType]);
-
-  const loadOrders = async () => {
+  const loadOrders = useCallback(async () => {
     try {
       const tgUser = getTelegramUser();
       if (!tgUser) {
@@ -51,7 +47,13 @@ function MyOrders({ user, userType }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userType]);
+
+  useEffect(() => {
+    loadOrders();
+    const interval = setInterval(loadOrders, 15000); // Auto-refresh every 15s
+    return () => clearInterval(interval);
+  }, [loadOrders]);
 
   const getStatusText = (status) => {
     switch (status) {

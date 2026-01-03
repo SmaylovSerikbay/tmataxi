@@ -16,6 +16,7 @@ function DriverPanel({ user }) {
   const [isOnline, setIsOnline] = useState(false);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  // eslint-disable-next-line no-unused-vars
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
