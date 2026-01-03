@@ -4,9 +4,48 @@ require('dotenv').config();
 
 let bot = null;
 let notifyDriverAboutNewOrder = () => {};
+let processTelegramUpdate = async () => {};
+let ensureTelegramWebhook = async () => {};
+
+const isServerless =
+  !!process.env.VERCEL ||
+  !!process.env.AWS_LAMBDA_FUNCTION_NAME ||
+  !!process.env.LAMBDA_TASK_ROOT;
+
+let webhookInitialized = false;
 
 if (process.env.TELEGRAM_BOT_TOKEN) {
-  bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
+  // IMPORTANT:
+  // - Local/server mode: polling is OK (long-running process).
+  // - Vercel serverless: polling is NOT OK (function sleeps). Use webhook + processUpdate.
+  bot = new TelegramBot(
+    process.env.TELEGRAM_BOT_TOKEN,
+    isServerless ? {} : { polling: true }
+  );
+
+  ensureTelegramWebhook = async () => {
+    if (!bot) return;
+    if (!isServerless) return;
+    if (webhookInitialized) return;
+
+    const baseUrl =
+      (process.env.API_PUBLIC_URL && process.env.API_PUBLIC_URL.replace(/\/$/, '')) ||
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null);
+
+    if (!baseUrl) {
+      console.warn('No API_PUBLIC_URL/VERCEL_URL set; cannot set Telegram webhook.');
+      return;
+    }
+
+    const webhookUrl = `${baseUrl}/api/telegram/webhook`;
+    try {
+      await bot.setWebHook(webhookUrl);
+      webhookInitialized = true;
+      console.log('Telegram webhook set:', webhookUrl);
+    } catch (e) {
+      console.error('Failed to set Telegram webhook:', e?.message || e);
+    }
+  };
 
   // Команда /start
   bot.onText(/\/start/, (msg) => {
@@ -128,9 +167,15 @@ ${order.comment ? `💬 Комментарий: ${order.comment}` : ''}
     }
   });
 
-  console.log('Telegram Bot initialized');
+  processTelegramUpdate = async (update) => {
+    if (!bot) return;
+    await ensureTelegramWebhook();
+    bot.processUpdate(update);
+  };
+
+  console.log(`Telegram Bot initialized (${isServerless ? 'webhook' : 'polling'})`);
 } else {
   console.warn('TELEGRAM_BOT_TOKEN not set. Bot will not be initialized.');
 }
 
-module.exports = { bot, notifyDriverAboutNewOrder };
+module.exports = { bot, notifyDriverAboutNewOrder, processTelegramUpdate, ensureTelegramWebhook };
