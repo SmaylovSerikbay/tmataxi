@@ -1,126 +1,227 @@
 .App {
   min-height: 100vh;
-  background-color: var(--tg-theme-bg-color, #ffffff);
-  color: var(--tg-theme-text-color, #000000);
+  background: linear-gradient(180deg, #FAFAFA 0%, #FFFFFF 100%);
+  color: var(--text-primary);
 }
 
 .container {
   max-width: 600px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 24px 20px;
 }
 
+/* Современные кнопки в стиле Apple */
 .btn {
   width: 100%;
-  padding: 14px;
-  font-size: 16px;
+  padding: 16px 24px;
+  font-size: 17px;
   font-weight: 600;
+  letter-spacing: -0.01em;
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   cursor: pointer;
-  transition: opacity 0.2s;
-  background-color: var(--tg-theme-button-color, #3390ec);
-  color: var(--tg-theme-button-text-color, #ffffff);
-  margin-top: 10px;
+  transition: var(--transition);
+  background: var(--primary-color);
+  color: #FFFFFF;
+  margin-top: 12px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn:active::before {
+  width: 300px;
+  height: 300px;
 }
 
 .btn:active {
-  opacity: 0.8;
+  transform: scale(0.98);
+  box-shadow: var(--shadow-md);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .btn-secondary {
-  background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
-  color: var(--tg-theme-text-color, #000000);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  box-shadow: none;
+  border: 1px solid var(--border-color);
 }
 
+.btn-secondary:hover {
+  background: var(--bg-tertiary);
+}
+
+/* Карточки в стиле Apple */
 .card {
-  background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
-  border-radius: 12px;
-  padding: 16px;
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  padding: 20px;
   margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: var(--transition);
 }
 
+.card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* Формы в стиле Apple */
 .input-group {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .input-group label {
   display: block;
   margin-bottom: 8px;
   font-weight: 500;
-  color: var(--tg-theme-text-color, #000000);
+  font-size: 15px;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 
 .input-group input,
 .input-group select,
 .input-group textarea {
   width: 100%;
-  padding: 12px;
-  border: 1px solid var(--tg-theme-hint-color, #999999);
-  border-radius: 8px;
-  font-size: 16px;
-  background-color: var(--tg-theme-bg-color, #ffffff);
-  color: var(--tg-theme-text-color, #000000);
+  padding: 14px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 17px;
+  background-color: #FFFFFF;
+  color: var(--text-primary);
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.input-group input:focus,
+.input-group select:focus,
+.input-group textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+}
+
+.input-group input::placeholder,
+.input-group textarea::placeholder {
+  color: var(--text-tertiary);
 }
 
 .input-group textarea {
   resize: vertical;
-  min-height: 80px;
+  min-height: 100px;
+  line-height: 1.5;
 }
 
+/* Карточки заказов */
 .order-card {
-  background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 12px;
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: var(--transition);
+}
+
+.order-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .order-card h3 {
-  margin-bottom: 12px;
-  color: var(--tg-theme-text-color, #000000);
+  margin-bottom: 16px;
+  color: var(--text-primary);
+  font-size: 20px;
+  font-weight: 600;
 }
 
 .order-info {
-  margin-bottom: 8px;
-  color: var(--tg-theme-hint-color, #999999);
-  font-size: 14px;
+  margin-bottom: 12px;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.5;
 }
 
 .order-info strong {
-  color: var(--tg-theme-text-color, #000000);
+  color: var(--text-primary);
+  font-weight: 600;
 }
 
+/* Статус бейджи */
 .status-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
   font-weight: 600;
-  margin-top: 8px;
+  margin-top: 12px;
+  letter-spacing: -0.01em;
 }
 
 .status-pending {
-  background-color: #ffa500;
-  color: #fff;
+  background: linear-gradient(135deg, #FF9500 0%, #FF6B00 100%);
+  color: #FFFFFF;
 }
 
 .status-accepted {
-  background-color: #4caf50;
-  color: #fff;
+  background: linear-gradient(135deg, #34C759 0%, #28A745 100%);
+  color: #FFFFFF;
 }
 
 .status-rejected {
-  background-color: #f44336;
-  color: #fff;
+  background: linear-gradient(135deg, #FF3B30 0%, #DC3545 100%);
+  color: #FFFFFF;
 }
 
 .status-in-progress {
-  background-color: #2196f3;
-  color: #fff;
+  background: linear-gradient(135deg, #007AFF 0%, #0051D5 100%);
+  color: #FFFFFF;
 }
 
 .status-completed {
-  background-color: #9e9e9e;
-  color: #fff;
+  background: linear-gradient(135deg, #8E8E93 0%, #636366 100%);
+  color: #FFFFFF;
 }
 
+/* Кнопка назад */
+.btn-back {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 17px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 0;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-back:hover {
+  opacity: 0.7;
+}
+
+.btn-back:active {
+  transform: scale(0.95);
+}

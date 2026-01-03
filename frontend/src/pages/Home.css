@@ -1,34 +1,93 @@
 .home-header {
   text-align: center;
-  margin-bottom: 40px;
-  padding-top: 20px;
+  margin-bottom: 48px;
+  padding-top: 32px;
+  animation: fadeInUp 0.6s ease-out;
 }
 
 .home-header h1 {
-  font-size: 28px;
-  margin-bottom: 10px;
-  color: var(--tg-theme-text-color, #000000);
+  font-size: 34px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #1D1D1F 0%, #007AFF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .home-header p {
-  color: var(--tg-theme-hint-color, #999999);
-  font-size: 16px;
+  color: var(--text-secondary);
+  font-size: 17px;
+  font-weight: 400;
 }
 
 .home-buttons {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  animation: fadeInUp 0.6s ease-out 0.2s both;
 }
 
 .btn-passenger {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
   margin-bottom: 16px;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+}
+
+.btn-passenger:hover {
+  box-shadow: 0 6px 24px rgba(102, 126, 234, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-passenger:active {
+  transform: translateY(0) scale(0.98);
 }
 
 .btn-driver {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, #F093FB 0%, #F5576C 100%);
+  box-shadow: 0 4px 16px rgba(245, 87, 108, 0.3);
+}
+
+.btn-driver:hover {
+  box-shadow: 0 6px 24px rgba(245, 87, 108, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-driver:active {
+  transform: translateY(0) scale(0.98);
 }
 
 .home-actions {
-  margin-top: 30px;
+  margin-top: 32px;
+  animation: fadeInUp 0.6s ease-out 0.4s both;
 }
 
+/* Анимации */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Плавное появление элементов */
+.home-buttons > * {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.home-buttons > *:nth-child(2) {
+  animation-delay: 0.1s;
+}

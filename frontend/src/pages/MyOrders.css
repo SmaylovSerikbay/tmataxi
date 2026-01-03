@@ -1,15 +1,32 @@
 .no-orders {
   text-align: center;
-  padding: 40px 20px;
+  padding: 64px 24px;
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  animation: fadeInUp 0.5s ease-out;
 }
 
 .no-orders p {
-  margin-bottom: 20px;
-  color: var(--tg-theme-hint-color, #999999);
-  font-size: 16px;
+  margin-bottom: 24px;
+  color: var(--text-secondary);
+  font-size: 17px;
+  line-height: 1.6;
 }
 
 .orders-list {
-  margin-top: 20px;
+  margin-top: 24px;
+  animation: fadeInUp 0.5s ease-out;
 }
 
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
