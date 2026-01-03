@@ -4,7 +4,7 @@ import { createOrder, registerPassenger } from '../utils/api';
 import { getTelegramUser } from '../utils/telegram';
 import './PassengerOrder.css';
 
-function PassengerOrder({ user }) => {
+function PassengerOrder({ user }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
