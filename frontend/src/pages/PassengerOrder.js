@@ -62,7 +62,7 @@ function PassengerOrder({ user }) {
 
       // Создаем заказ
       const orderDate = new Date(`${formData.date}T${formData.time}`);
-      const order = await createOrder({
+      await createOrder({
         passengerId: passenger._id,
         from: {
           city: formData.fromCity,

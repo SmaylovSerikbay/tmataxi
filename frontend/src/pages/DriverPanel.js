@@ -27,6 +27,7 @@ function DriverPanel({ user }) {
     carModel: '',
     carNumber: ''
   });
+  // eslint-disable-next-line no-unused-vars
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
@@ -38,6 +39,7 @@ function DriverPanel({ user }) {
     }
 
     loadDriverData(tgUser.id.toString());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -56,6 +58,7 @@ function DriverPanel({ user }) {
         newSocket.disconnect();
       };
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [driver, isOnline]);
 
   useEffect(() => {

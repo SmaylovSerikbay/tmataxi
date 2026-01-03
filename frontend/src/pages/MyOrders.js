@@ -11,6 +11,7 @@ function MyOrders({ user, userType }) {
 
   useEffect(() => {
     loadOrders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userType]);
 
   const loadOrders = async () => {
