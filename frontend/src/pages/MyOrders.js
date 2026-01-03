@@ -50,9 +50,29 @@ function MyOrders({ user, userType }) {
     }
   };
 
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'pending': return 'Ожидает';
+      case 'accepted': return 'Принят';
+      case 'rejected': return 'Отклонен';
+      case 'in-progress': return 'В пути';
+      case 'completed': return 'Завершен';
+      case 'cancelled': return 'Отменен';
+      default: return status;
+    }
+  };
+
+  const getStatusClass = (status) => {
+    switch (status) {
+      case 'pending': return 'status-pending';
+      case 'accepted': return 'status-accepted';
+      default: return '';
+    }
+  };
+
   if (loading) {
     return (
-      <div className="container" style={{ padding: '20px', textAlign: 'center', color: 'var(--hint-color)' }}>
+      <div className="container" style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--hint-color)' }}>
         <p>Загрузка...</p>
       </div>
     );
@@ -69,23 +89,22 @@ function MyOrders({ user, userType }) {
       {orders.length === 0 ? (
         <div className="no-orders">
           <p>У вас пока нет активных заказов</p>
-          <button className="btn btn-primary" onClick={() => navigate(userType === 'driver' ? '/driver' : '/order')}>
-            {userType === 'driver' ? 'Перейти в панель таксиста' : 'Создать новый заказ'}
-          </button>
+          <div className="form-section">
+            <button className="btn btn-primary" onClick={() => navigate(userType === 'driver' ? '/driver' : '/order')}>
+              {userType === 'driver' ? 'Перейти в панель таксиста' : 'Создать новый заказ'}
+            </button>
+          </div>
         </div>
       ) : (
         <div className="orders-list">
           {orders.map(order => (
             <div key={order._id || order.id} className="order-card">
               <div className="order-header">
-                <span className="order-price">{order.price} ₽</span>
-                <span className={`status-badge status-${order.status}`}>
-                  {order.status === 'pending' && 'Ожидает'}
-                  {order.status === 'accepted' && 'Принят'}
-                  {order.status === 'rejected' && 'Отклонен'}
-                  {order.status === 'in-progress' && 'В пути'}
-                  {order.status === 'completed' && 'Завершен'}
-                  {order.status === 'cancelled' && 'Отменен'}
+                <span className="order-price">
+                  {order.price} {order.currency === 'UZS' ? 'сум' : '₸'}
+                </span>
+                <span className={`status-badge ${getStatusClass(order.status)}`}>
+                  {getStatusText(order.status)}
                 </span>
               </div>
               <div className="order-info">
