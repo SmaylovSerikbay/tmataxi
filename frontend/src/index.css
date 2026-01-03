@@ -6,19 +6,19 @@
 }
 
 :root {
-  /* Telegram Theme Variables Fallbacks */
-  --tg-theme-bg-color: #ffffff;
-  --tg-theme-secondary-bg-color: #f1f1f1;
-  --tg-theme-text-color: #000000;
+  /* Telegram Theme Variables Fallbacks - Dark Theme Default */
+  --tg-theme-bg-color: #1c1c1d;
+  --tg-theme-secondary-bg-color: #000000;
+  --tg-theme-text-color: #ffffff;
   --tg-theme-hint-color: #8e8e93;
   --tg-theme-link-color: #007aff;
   --tg-theme-button-color: #007aff;
   --tg-theme-button-text-color: #ffffff;
-  --tg-theme-header-bg-color: #ffffff;
+  --tg-theme-header-bg-color: #1c1c1d;
   
   /* Internal Variables mapped to Telegram's */
-  --bg-color: var(--tg-theme-bg-color);
-  --secondary-bg-color: var(--tg-theme-secondary-bg-color);
+  --bg-color: var(--tg-theme-bg-color); /* Card Background */
+  --page-bg-color: var(--tg-theme-secondary-bg-color); /* Page Background */
   --text-color: var(--tg-theme-text-color);
   --hint-color: var(--tg-theme-hint-color);
   --link-color: var(--tg-theme-link-color);
@@ -26,19 +26,23 @@
   --button-text-color: var(--tg-theme-button-text-color);
   --header-bg-color: var(--tg-theme-header-bg-color);
   
-  --separator-color: rgba(0, 0, 0, 0.1);
+  --separator-color: rgba(255, 255, 255, 0.15);
   --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
   :root {
-    --separator-color: rgba(255, 255, 255, 0.15);
+     /* Light Theme Overrides */
+    --tg-theme-bg-color: #ffffff;
+    --tg-theme-secondary-bg-color: #f2f2f7;
+    --tg-theme-text-color: #000000;
+    --separator-color: rgba(0, 0, 0, 0.1);
   }
 }
 
 body {
   font-family: var(--font-family);
-  background-color: var(--secondary-bg-color); /* Telegram apps usually have gray background for lists */
+  background-color: var(--page-bg-color);
   color: var(--text-color);
   font-size: 17px;
   line-height: 1.5;

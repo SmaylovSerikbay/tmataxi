@@ -1,5 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import './Home.css';
+
 function Home({ user, userType, setUserType }) {
   const navigate = useNavigate();
 
@@ -13,20 +15,34 @@ function Home({ user, userType, setUserType }) {
     navigate('/driver');
   };
 
+  const getInitials = (name) => {
+    return name ? name.charAt(0).toUpperCase() : 'U';
+  };
+
+  const displayName = user ? (user.firstName || user.username || 'User') : 'Guest';
+  const displayUsername = user?.username ? `@${user.username}` : '';
+
   return (
     <div>
-      <div className="home-header">
-        <h1>🚕 TMATAXI</h1>
-        <p style={{ color: 'var(--hint-color)' }}>Выберите режим работы</p>
+      <div className="home-profile">
+        <div className="profile-avatar">
+          {getInitials(displayName)}
+        </div>
+        <div className="profile-name">{displayName}</div>
+        {displayUsername && <div className="profile-username">{displayUsername}</div>}
       </div>
 
       <div className="form-section">
         <h3>Меню</h3>
         <button className="btn" onClick={handlePassengerClick}>
-          👤 Я пассажир
+          <div className="item-icon" style={{ backgroundColor: '#007AFF' }}>👤</div>
+          <span>Я пассажир</span>
+          <div className="item-chevron">›</div>
         </button>
         <button className="btn" onClick={handleDriverClick}>
-          🚖 Я таксист
+          <div className="item-icon" style={{ backgroundColor: '#FF9500' }}>🚖</div>
+          <span>Я таксист</span>
+          <div className="item-chevron">›</div>
         </button>
       </div>
 
@@ -34,7 +50,9 @@ function Home({ user, userType, setUserType }) {
         <div className="form-section">
           <h3>Личный кабинет</h3>
           <button className="btn" onClick={() => navigate('/my-orders')}>
-            📦 Мои заказы
+            <div className="item-icon" style={{ backgroundColor: '#34C759' }}>📦</div>
+            <span>Мои заказы</span>
+            <div className="item-chevron">›</div>
           </button>
         </div>
       )}
