@@ -8,6 +8,7 @@
     "@supabase/supabase-js": "^2.39.0",
     "cors": "^2.8.5",
     "express-validator": "^7.0.1",
-    "axios": "^1.6.2"
+    "axios": "^1.6.2",
+    "mongoose": "^8.0.3"
   }
 }

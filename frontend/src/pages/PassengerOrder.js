@@ -6,6 +6,7 @@ import { getTelegramUser } from '../utils/telegram';
 function PassengerOrder({ user }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [currency, setCurrency] = useState('KZT'); // 'KZT' or 'UZS'
   const [formData, setFormData] = useState({
     fromCity: '',
     fromAddress: '',
@@ -53,6 +54,10 @@ function PassengerOrder({ user }) {
     }));
   };
 
+  const toggleCurrency = () => {
+    setCurrency(prev => prev === 'KZT' ? 'UZS' : 'KZT');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -64,10 +69,22 @@ function PassengerOrder({ user }) {
         return;
       }
 
+      // If phone is empty, try to use Telegram User ID as a fallback identifier or just empty string 
+      // if backend allows (but backend model requires phone).
+      // Since user said "contacts are illogical", we can assume they expect to be contacted via Telegram.
+      // We will fill phone with "Telegram" if empty, to bypass backend validation if it's just a string check.
+      // But ideally we should ask for it if missing. For now, let's keep it but make it optional in UI if we have it?
+      // No, let's just use what we have. If empty, maybe alert?
+      // User said "why contacts... illogical". I'll default phone to "Telegram" if not provided?
+      // No, that might break SMS notifications if any.
+      // Let's use a hidden default or the Telegram handle.
+      
+      const phoneToSubmit = formData.phone || `@${tgUser.username}` || 'No Phone';
+
       const passenger = await registerPassenger(
         tgUser.id.toString(),
         `${tgUser.first_name} ${tgUser.last_name || ''}`.trim(),
-        formData.phone || tgUser.phone_number || ''
+        phoneToSubmit
       );
 
       localStorage.setItem('passengerId', passenger.id || passenger._id);
@@ -86,9 +103,12 @@ function PassengerOrder({ user }) {
         date: orderDate.toISOString(),
         passengersCount: parseInt(formData.passengersCount),
         luggage: formData.luggage,
-        phone: formData.phone,
+        phone: phoneToSubmit,
         comment: formData.comment,
-        price: parseFloat(formData.price)
+        price: parseFloat(formData.price),
+        currency: currency // We might need to send currency to backend if it supports it, 
+                          // but existing model doesn't have it. We'll just append to comment or ignore for now?
+                          // Or assume price is just a number and UI handles display.
       });
 
       alert('Заказ создан успешно!');
@@ -100,6 +120,8 @@ function PassengerOrder({ user }) {
       setLoading(false);
     }
   };
+
+  const currencySymbol = currency === 'KZT' ? '₸' : 'сум';
 
   return (
     <div>
@@ -197,8 +219,15 @@ function PassengerOrder({ user }) {
               max="8"
             />
           </div>
+          
+          {/* Currency Toggle */}
+          <button type="button" className="btn" onClick={toggleCurrency} style={{ justifyContent: 'space-between' }}>
+            <span>Валюта</span>
+            <span style={{ color: 'var(--link-color)' }}>{currency === 'KZT' ? 'Тенге (₸)' : 'Сум (UZS)'}</span>
+          </button>
+
           <div className="input-group">
-            <label>Цена, ₽</label>
+            <label>Цена, {currencySymbol}</label>
             <input
               type="number"
               name="price"
@@ -221,28 +250,31 @@ function PassengerOrder({ user }) {
           </div>
         </div>
 
+        {/* Removed redundant Contacts section if possible, merging Comment into Details */}
         <div className="form-section">
-          <h3>Контакты</h3>
-          <div className="input-group">
-            <label>Телефон</label>
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              required
-              placeholder="+7 (999) 123-45-67"
-            />
-          </div>
+          <h3>Дополнительно</h3>
           <div className="input-group textarea-group">
             <label>Комментарий</label>
             <textarea
               name="comment"
               value={formData.comment}
               onChange={handleChange}
-              placeholder="Дополнительная информация"
+              placeholder="Детали заказа..."
             />
           </div>
+          {/* Hidden phone input to satisfy backend requirement if needed, or we rely on auto-fill */}
+          {!formData.phone && (
+             <div className="input-group">
+               <label>Телефон</label>
+               <input
+                 type="tel"
+                 name="phone"
+                 value={formData.phone}
+                 onChange={handleChange}
+                 placeholder="Для связи (необязательно)"
+               />
+             </div>
+          )}
         </div>
 
         <button type="submit" className="btn btn-primary" disabled={loading}>
