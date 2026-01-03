@@ -26,6 +26,9 @@ if (process.env.TELEGRAM_BOT_TOKEN) {
   notifyDriverAboutNewOrder = function(driverTelegramId, order) {
     if (!bot) return;
     
+    const currency = order.currency || 'KZT';
+    const currencyLabel = currency === 'UZS' ? 'сум' : '₸';
+
     const message = `
 🚗 Новый заказ!
 
@@ -33,7 +36,7 @@ if (process.env.TELEGRAM_BOT_TOKEN) {
 📍 Куда: ${order.to.city}, ${order.to.address}
 📅 Дата: ${new Date(order.date).toLocaleString('ru-RU')}
 👥 Пассажиров: ${order.passengersCount}
-💰 Цена: ${order.price} ₽
+💰 Цена: ${order.price} ${currencyLabel}
 📞 Телефон: ${order.phone}
 ${order.comment ? `💬 Комментарий: ${order.comment}` : ''}
     `;
@@ -61,18 +64,24 @@ ${order.comment ? `💬 Комментарий: ${order.comment}` : ''}
     const telegramId = query.from.id.toString();
 
     try {
+      // Answer immediately to avoid "query is too old" errors
+      await bot.answerCallbackQuery(query.id, { text: '⏳ Обрабатываю…' });
+
       if (data.startsWith('accept_')) {
         const orderId = data.replace('accept_', '');
         
         // Получаем информацию о таксисте
-        const apiUrl = process.env.API_URL || process.env.VERCEL_URL 
-          ? `https://${process.env.VERCEL_URL}` 
-          : 'http://localhost:3000';
+        const apiUrl = process.env.API_URL
+          ? process.env.API_URL.replace(/\/$/, '')
+          : (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
         const driverResponse = await axios.get(`${apiUrl}/api/drivers/${telegramId}`);
         const driver = driverResponse.data;
 
         if (!driver || !driver.id) {
-          bot.answerCallbackQuery(query.id, { text: 'Ошибка: таксист не найден' });
+          await bot.editMessageText('⚠️ Ошибка: таксист не найден', { 
+            chat_id: chatId, 
+            message_id: query.message.message_id 
+          });
           return;
         }
 
@@ -81,8 +90,7 @@ ${order.comment ? `💬 Комментарий: ${order.comment}` : ''}
           driverId: driver.id
         });
 
-        bot.answerCallbackQuery(query.id, { text: 'Заказ принят!' });
-        bot.editMessageText('✅ Заказ принят! Откройте приложение для деталей.', { 
+        await bot.editMessageText('✅ Заказ принят! Откройте приложение для деталей.', { 
           chat_id: chatId, 
           message_id: query.message.message_id 
         });
@@ -90,20 +98,33 @@ ${order.comment ? `💬 Комментарий: ${order.comment}` : ''}
         const orderId = data.replace('reject_', '');
         
         // Отклоняем заказ
-        const apiUrl = process.env.API_URL || process.env.VERCEL_URL 
-          ? `https://${process.env.VERCEL_URL}` 
-          : 'http://localhost:3000';
-        await axios.post(`${apiUrl}/api/orders/${orderId}/reject`);
+        const apiUrl = process.env.API_URL
+          ? process.env.API_URL.replace(/\/$/, '')
+          : (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
 
-        bot.answerCallbackQuery(query.id, { text: 'Заказ отклонен' });
-        bot.editMessageText('❌ Заказ отклонен', { 
+        // Need driverId to dismiss only for this driver
+        const driverResponse = await axios.get(`${apiUrl}/api/drivers/${telegramId}`);
+        const driver = driverResponse.data;
+        if (!driver || !driver.id) {
+          await bot.editMessageText('⚠️ Ошибка: таксист не найден', { 
+            chat_id: chatId, 
+            message_id: query.message.message_id 
+          });
+          return;
+        }
+
+        await axios.post(`${apiUrl}/api/orders/${orderId}/reject`, { driverId: driver.id });
+
+        await bot.editMessageText('❌ Скрыто. Этот заказ больше не будет показываться вам.', { 
           chat_id: chatId, 
           message_id: query.message.message_id 
         });
       }
     } catch (error) {
       console.error('Error handling callback:', error);
-      bot.answerCallbackQuery(query.id, { text: 'Произошла ошибка' });
+      try {
+        await bot.answerCallbackQuery(query.id, { text: 'Произошла ошибка', show_alert: true });
+      } catch (e) {}
     }
   });
 

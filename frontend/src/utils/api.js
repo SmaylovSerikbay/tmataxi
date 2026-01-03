@@ -44,8 +44,8 @@ export const getPassengerOrders = async (passengerId) => {
 };
 
 // Получить доступные заказы
-export const getAvailableOrders = async () => {
-  const response = await api.get('/orders/available');
+export const getAvailableOrders = async (driverId) => {
+  const response = await api.get('/orders/available', { params: driverId ? { driverId } : {} });
   return response.data;
 };
 
@@ -56,8 +56,8 @@ export const acceptOrder = async (orderId, driverId) => {
 };
 
 // Отклонить заказ
-export const rejectOrder = async (orderId) => {
-  const response = await api.post(`/orders/${orderId}/reject`);
+export const rejectOrder = async (orderId, driverId) => {
+  const response = await api.post(`/orders/${orderId}/reject`, driverId ? { driverId } : {});
   return response.data;
 };
 

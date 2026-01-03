@@ -13,7 +13,8 @@ router.post('/create', [
   body('to.address').notEmpty().withMessage('To address required'),
   body('date').notEmpty().withMessage('Date required'),
   body('phone').notEmpty().withMessage('Phone required'),
-  body('price').isNumeric().withMessage('Price must be a number')
+  body('price').isNumeric().withMessage('Price must be a number'),
+  body('currency').optional().isIn(['KZT', 'UZS']).withMessage('Currency must be KZT or UZS')
 ], async (req, res) => {
   try {
     if (!supabase) {
@@ -34,7 +35,8 @@ router.post('/create', [
       luggage = false,
       phone,
       comment = '',
-      price
+      price,
+      currency = 'KZT'
     } = req.body;
 
     // Создаем заказ
@@ -56,6 +58,7 @@ router.post('/create', [
         phone: phone,
         comment: comment,
         price: price,
+        currency: currency,
         status: 'pending'
       })
       .select()
@@ -102,6 +105,7 @@ router.post('/create', [
     const formattedOrder = {
       ...order,
       _id: order.id,
+      currency: order.currency,
       from: {
         city: order.from_city,
         address: order.from_address,
@@ -196,7 +200,20 @@ router.get('/available', async (req, res) => {
       return res.status(500).json({ error: 'Supabase not configured' });
     }
 
-    const { data: orders, error } = await supabase
+    const driverId = req.query.driverId;
+    let rejectedOrderIds = [];
+
+    if (driverId) {
+      const { data: rejs, error: rejErr } = await supabase
+        .from('order_rejections')
+        .select('order_id')
+        .eq('driver_id', driverId);
+      if (!rejErr && rejs) {
+        rejectedOrderIds = rejs.map(r => r.order_id);
+      }
+    }
+
+    let query = supabase
       .from('orders')
       .select(`
         *,
@@ -209,12 +226,19 @@ router.get('/available', async (req, res) => {
       .eq('status', 'pending')
       .order('created_at', { ascending: false });
 
+    if (rejectedOrderIds.length > 0) {
+      query = query.not('id', 'in', `(${rejectedOrderIds.join(',')})`);
+    }
+
+    const { data: orders, error } = await query;
+
     if (error) throw error;
 
     // Форматируем ответ
     const formattedOrders = orders.map(order => ({
       ...order,
       _id: order.id,
+      currency: order.currency,
       passenger: order.passengers ? {
         _id: order.passengers.id,
         name: order.passengers.name,
@@ -324,10 +348,26 @@ router.post('/:orderId/reject', async (req, res) => {
       return res.status(500).json({ error: 'Supabase not configured' });
     }
 
+    const { driverId } = req.body || {};
+
+    // If driverId provided, store per-driver rejection so the order disappears only for that driver.
+    if (driverId) {
+      const { error: insErr } = await supabase
+        .from('order_rejections')
+        .insert({ order_id: req.params.orderId, driver_id: driverId });
+      // Ignore duplicate key (already rejected)
+      if (insErr && insErr.code !== '23505') {
+        throw insErr;
+      }
+      return res.json({ message: 'Order dismissed for driver', orderId: req.params.orderId, driverId });
+    }
+
+    // Backward-compatible: mark as rejected globally (not recommended, but keeps old clients working)
     const { data: order, error } = await supabase
       .from('orders')
-      .select('*')
+      .update({ status: 'rejected' })
       .eq('id', req.params.orderId)
+      .select()
       .single();
 
     if (error) {

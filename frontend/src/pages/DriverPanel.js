@@ -69,7 +69,7 @@ function DriverPanel({ user }) {
     try {
       const driverData = await getDriver(telegramId);
       setDriver(driverData);
-      setIsOnline(driverData.isOnline);
+      setIsOnline(driverData.isOnline ?? driverData.is_online ?? false);
     } catch (error) {
       console.log("Driver not found or error", error);
     } finally {
@@ -79,7 +79,8 @@ function DriverPanel({ user }) {
 
   const loadAvailableOrders = async () => {
     try {
-      const availableOrders = await getAvailableOrders();
+      const driverId = driver?.id || driver?._id;
+      const availableOrders = await getAvailableOrders(driverId);
       setOrders(availableOrders);
     } catch (error) {
       console.error('Error loading orders:', error);
@@ -118,7 +119,7 @@ function DriverPanel({ user }) {
 
   const handleRejectOrder = async (orderId) => {
     try {
-      await rejectOrder(orderId);
+      await rejectOrder(orderId, driver?.id || driver?._id);
       setOrders(prev => prev.filter(order => order._id !== orderId));
     } catch (error) {
       console.error('Error rejecting order:', error);
